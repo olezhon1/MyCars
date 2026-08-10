@@ -42,6 +42,7 @@ struct MyCarsTests {
         let savedCar = try #require(try repository.car(id: car.id))
         #expect(savedCar.washes.count == 1)
         #expect(savedCar.washes.first?.car?.id == car.id)
+        #expect(try repository.currentMileage(for: car.id) == 10_000)
     }
 
     @Test func repositoryStoresNewExpenseTypes() throws {
@@ -72,6 +73,28 @@ struct MyCarsTests {
         #expect(repository.addedCars.isEmpty)
         #expect(viewModel.errorMessage != nil)
         #expect(!didClose)
+    }
+
+    @Test func maintenanceIntervalIsEstimatedFromServiceMileages() {
+        let car = makeCar(brand: "Dacia")
+        car.maintenanceHistory = [
+            Maintenance(title: "ТО 1", price: 1_000, mileage: 10_000),
+            Maintenance(title: "Ремонт", price: 2_000, mileage: 20_000, type: .repair),
+            Maintenance(title: "ТО 2", price: 1_500, mileage: 32_000)
+        ]
+
+        #expect(car.estimatedMaintenanceInterval == 11_000)
+        #expect(car.kilometersUntilMaintenance == 11_000)
+    }
+
+    @Test func maintenanceIntervalRequiresTwoRecords() {
+        let car = makeCar(brand: "Dacia")
+        car.maintenanceHistory = [
+            Maintenance(title: "ТО", price: 1_000, mileage: 10_000)
+        ]
+
+        #expect(car.estimatedMaintenanceInterval == nil)
+        #expect(car.kilometersUntilMaintenance == nil)
     }
 
     private func makeCar(brand: String) -> Car {

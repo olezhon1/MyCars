@@ -35,27 +35,38 @@ struct MainTabView: View {
                 HomeView(viewModel: homeViewModel)
                     .navigationDestination(for: HomeRoute.self, destination: homeDestination)
             }
-            .tabItem { Label(AppTab.home.rawValue, image: AppTab.home.icon) }
+            .tabItem { tabLabel(for: .home) }
             .tag(AppTab.home)
 
             NavigationStack(path: $router.carsPath) {
                 MyCarsView(viewModel: carsViewModel)
                     .navigationDestination(for: CarsRoute.self, destination: carsDestination)
             }
-            .tabItem { Label(AppTab.myCars.rawValue, image: AppTab.myCars.icon) }
+            .tabItem { tabLabel(for: .myCars) }
             .tag(AppTab.myCars)
 
             NavigationStack(path: $router.statsPath) {
                 StatsView(viewModel: statsViewModel)
             }
-            .tabItem { Label(AppTab.stats.rawValue, image: AppTab.stats.icon) }
+            .tabItem { tabLabel(for: .stats) }
             .tag(AppTab.stats)
 
             NavigationStack {
                 ContentUnavailableView("Налаштування", systemImage: "gear", description: Text("Розділ у розробці"))
             }
-            .tabItem { Label(AppTab.settings.rawValue, image: AppTab.settings.icon) }
+            .tabItem { tabLabel(for: .settings) }
             .tag(AppTab.settings)
+        }
+        .tint(Color("primary"))
+    }
+
+    private func tabLabel(for tab: AppTab) -> some View {
+        Label {
+            Text(tab.rawValue)
+        } icon: {
+            if let icon = UIImage(named: tab.icon)?.withRenderingMode(.alwaysTemplate) {
+                Image(uiImage: icon)
+            }
         }
     }
 

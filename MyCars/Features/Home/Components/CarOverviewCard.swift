@@ -19,7 +19,7 @@ struct CarOverviewCard: View {
             }
 
             HStack(spacing: 12) {
-                StatView(title: "Пробіг при купівлі", value: car.purchaseMileage, style: .vertical, alignment: .center)
+                StatView(title: "ТО через", value: car.maintenanceStatus, style: .vertical, alignment: .center)
                 StatView(title: "Витрати", value: car.totalExpenses, style: .vertical, alignment: .center)
                 StatView(title: "Розхід", value: car.averageConsumption, style: .vertical, alignment: .center)
             }

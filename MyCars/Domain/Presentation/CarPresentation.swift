@@ -6,6 +6,7 @@ struct CarPresentation: Identifiable, Equatable {
     let purchasePrice: String
     let purchaseMileage: String
     let currentMileage: String
+    let maintenanceStatus: String
     let totalExpenses: String
     let averageConsumption: String
     let imageData: Data?
@@ -29,6 +30,7 @@ enum PresentationMapper {
             purchasePrice: car.purchasePrice.formatted(.currency(code: "UAH")),
             purchaseMileage: "\(car.purchaseMileage.formatted()) км",
             currentMileage: "\(car.currentMileage.formatted()) км",
+            maintenanceStatus: maintenanceStatus(for: car),
             totalExpenses: total.formatted(.currency(code: "UAH")),
             averageConsumption: averageConsumption(for: car).map { "\($0.formatted(.number.precision(.fractionLength(1)))) л" } ?? "—",
             imageData: car.imageData,
@@ -74,6 +76,20 @@ enum PresentationMapper {
         + car.tuningModifications.reduce(0) { $0 + $1.price }
         + car.tireServices.reduce(0) { $0 + $1.price }
         + car.otherExpenses.reduce(0) { $0 + $1.price }
+    }
+
+    private static func maintenanceStatus(for car: Car) -> String {
+        guard let kilometers = car.kilometersUntilMaintenance else { return "—" }
+
+        if kilometers > 0 {
+            return "\(kilometers.formatted()) км"
+        }
+
+        if kilometers == 0 {
+            return "Зараз"
+        }
+
+        return "Прострочено на \(abs(kilometers).formatted()) км"
     }
 
     private static func averageConsumption(for car: Car) -> Double? {

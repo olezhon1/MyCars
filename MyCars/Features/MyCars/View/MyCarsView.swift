@@ -24,8 +24,8 @@ struct MyCarsView: View {
 
         ScrollView {
             HStack(alignment: .center, spacing: 20) {
-                StatView(title: "Всього витрачено", value: "19 032 грн", style: .horizontal)
-                StatView(title: "В километрах", value: "19 грн / км", style: .horizontal)
+                StatView(title: "Всього витрачено", value: viewModel.stats.totalExpenses, style: .horizontal)
+                StatView(title: "На кілометр", value: viewModel.stats.costPerKilometer, style: .horizontal)
             }
             .padding(.bottom, 24)
             .padding(.horizontal, 20)

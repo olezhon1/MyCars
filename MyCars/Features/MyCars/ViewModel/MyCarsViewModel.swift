@@ -8,8 +8,15 @@ final class MyCarsViewModel {
     private let selection: CarSelectionStore
     private let onAddCar: () -> Void
 
+    private let selectedPeriod: StatsPeriod = .allTime
+    private var models: [Car] = []
+
+    var selectedCarID: UUID? {
+        selection.selectedCarID
+    }
+
     private(set) var cars: [CarPresentation] = []
-    private(set) var selectedCarID: UUID?
+    private(set) var stats: StatsPresentation = .empty
     private(set) var errorMessage: String?
 
     init(repository: any CarRepository, selection: CarSelectionStore, onAddCar: @escaping () -> Void) {
@@ -20,10 +27,10 @@ final class MyCarsViewModel {
 
     func load() {
         do {
-            let models = try repository.fetchCars()
+            models = try repository.fetchCars()
             selection.reconcile(with: models)
-            selectedCarID = selection.selectedCarID
             cars = models.map(PresentationMapper.car)
+            updateStats()
             errorMessage = nil
         } catch { errorMessage = error.localizedDescription }
     }
@@ -32,8 +39,13 @@ final class MyCarsViewModel {
 
     func onCarSelected(_ carID: UUID) {
         selection.select(carID)
-        selectedCarID = carID
+        updateStats()
     }
 
     func dismissError() { errorMessage = nil }
+
+    private func updateStats() {
+        let selected = models.first { $0.id == selection.selectedCarID }
+        stats = PresentationMapper.stats(for: selected, period: selectedPeriod)
+    }
 }

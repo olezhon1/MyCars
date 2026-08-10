@@ -10,6 +10,7 @@ protocol CarRepository {
 
 @MainActor
 protocol ExpenseRepository {
+    func currentMileage(for carID: UUID) throws -> Int
     func addRefill(to carID: UUID, mileage: Int, amount: Double, pricePerUnit: Double, isFullCharge: Bool, date: Date) throws
     func addWash(to carID: UUID, price: Double, mileage: Int?, date: Date) throws
     func addInsurance(to carID: UUID, type: InsuranceType, policyNumber: String, companyName: String, startDate: Date, endDate: Date, price: Double) throws
@@ -52,6 +53,10 @@ final class SwiftDataRepository: CarRepository, ExpenseRepository {
     func add(_ car: Car) throws {
         context.insert(car)
         try context.save()
+    }
+
+    func currentMileage(for carID: UUID) throws -> Int {
+        try requiredCar(id: carID).currentMileage
     }
 
     func addRefill(to carID: UUID, mileage: Int, amount: Double, pricePerUnit: Double, isFullCharge: Bool, date: Date) throws {

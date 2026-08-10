@@ -25,10 +25,11 @@ struct CarCard: View {
                 InsuranceTickerView(validUntil: insuranceEndDate).clipShape(.rect(cornerRadius: 8))
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
         .overlay {
             RoundedRectangle(cornerRadius: 10)
-                .stroke(isSelected ? Color("primary") : Color("ticker_background"), lineWidth: isSelected ? 4 : 2)
+                .stroke(isSelected ? Color("ticker_background") : Color("primary"), lineWidth: isSelected ? 4 : 2)
         }
     }
 

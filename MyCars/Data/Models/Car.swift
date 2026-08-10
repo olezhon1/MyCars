@@ -38,6 +38,30 @@ class Car {
     var totalDrivenKilometers: Int {
         max(0, currentMileage - purchaseMileage)
     }
+
+    var estimatedMaintenanceInterval: Int? {
+        let mileages = maintenanceHistory
+            .map(\.mileage)
+            .sorted()
+
+        guard mileages.count >= 2 else { return nil }
+
+        let intervals = zip(mileages, mileages.dropFirst())
+            .map { $1 - $0 }
+            .filter { $0 > 0 }
+
+        guard !intervals.isEmpty else { return nil }
+        return Int((Double(intervals.reduce(0, +)) / Double(intervals.count)).rounded())
+    }
+
+    var kilometersUntilMaintenance: Int? {
+        guard
+            let interval = estimatedMaintenanceInterval,
+            let lastMaintenanceMileage = maintenanceHistory.map(\.mileage).max()
+        else { return nil }
+
+        return lastMaintenanceMileage + interval - currentMileage
+    }
     
     @Relationship(deleteRule: .cascade, inverse: \Insurance.car)
     var insurances: [Insurance] = []

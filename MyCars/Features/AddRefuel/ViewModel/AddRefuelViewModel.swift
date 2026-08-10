@@ -23,9 +23,10 @@ final class AddRefuelViewModel {
 
     func save() {
         do {
+            let currentMileage = try repository.currentMileage(for: carID)
             try repository.addRefill(
                 to: carID,
-                mileage: try FormValidation.integer(mileage, field: "Пробіг"),
+                mileage: try FormValidation.integer(mileage, field: "Пробіг", minimum: currentMileage),
                 amount: try FormValidation.decimal(amount, field: "Кількість палива", minimum: 0.01),
                 pricePerUnit: try FormValidation.decimal(pricePerUnit, field: "Ціна за одиницю", minimum: 0.01),
                 isFullCharge: isFullCharge,

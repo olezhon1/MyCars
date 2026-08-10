@@ -23,11 +23,12 @@ final class AddRepairViewModel {
 
     func save() {
         do {
+            let currentMileage = try repository.currentMileage(for: carID)
             try repository.addRepair(
                 to: carID,
                 title: try FormValidation.required(title, field: "Назва"),
                 price: try FormValidation.decimal(price, field: "Вартість", minimum: 0.01),
-                mileage: try FormValidation.integer(mileage, field: "Пробіг"),
+                mileage: try FormValidation.integer(mileage, field: "Пробіг", minimum: currentMileage),
                 date: date,
                 notes: normalizedNotes
             )

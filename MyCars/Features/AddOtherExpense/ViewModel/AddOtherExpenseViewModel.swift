@@ -23,11 +23,12 @@ final class AddOtherExpenseViewModel {
 
     func save() {
         do {
+            let currentMileage = try repository.currentMileage(for: carID)
             try repository.addOtherExpense(
                 to: carID,
                 title: try FormValidation.required(title, field: "Назва"),
                 price: try FormValidation.decimal(price, field: "Вартість", minimum: 0.01),
-                mileage: try optionalMileage(),
+                mileage: try optionalMileage(minimum: currentMileage),
                 date: date,
                 notes: normalizedNotes
             )
@@ -37,9 +38,9 @@ final class AddOtherExpenseViewModel {
 
     func dismissError() { errorMessage = nil }
 
-    private func optionalMileage() throws -> Int? {
+    private func optionalMileage(minimum: Int) throws -> Int? {
         let value = mileage.trimmingCharacters(in: .whitespacesAndNewlines)
-        return value.isEmpty ? nil : try FormValidation.integer(value, field: "Пробіг")
+        return value.isEmpty ? nil : try FormValidation.integer(value, field: "Пробіг", minimum: minimum)
     }
 
     private var normalizedNotes: String? {
