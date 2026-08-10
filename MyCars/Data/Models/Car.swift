@@ -27,8 +27,10 @@ class Car {
         let repairMileages = maintenanceHistory.map { $0.mileage }
         let washMileages = washes.compactMap { $0.mileage }
         let tuningMileages = tuningModifications.compactMap { $0.mileage }
+        let tireServiceMileages = tireServices.map { $0.mileage }
+        let otherExpenseMileages = otherExpenses.compactMap { $0.mileage }
         
-        let allMileages = fuelMileages + repairMileages + washMileages + tuningMileages
+        let allMileages = fuelMileages + repairMileages + washMileages + tuningMileages + tireServiceMileages + otherExpenseMileages
         
         return allMileages.max() ?? purchaseMileage
     }
@@ -51,6 +53,12 @@ class Car {
     
     @Relationship(deleteRule: .cascade, inverse: \EnergyRefill.car)
     var fuelHistory: [EnergyRefill] = []
+
+    @Relationship(deleteRule: .cascade, inverse: \TireService.car)
+    var tireServices: [TireService] = []
+
+    @Relationship(deleteRule: .cascade, inverse: \OtherExpense.car)
+    var otherExpenses: [OtherExpense] = []
     
     var activeInsurance: Insurance? {
         insurances.first(where: { $0.isActive })

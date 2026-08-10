@@ -40,11 +40,14 @@ enum PresentationMapper {
         guard let car else { return .empty }
         let startDate = period.startDate
         let fuel = car.fuelHistory.filter { $0.date >= startDate }.reduce(0) { $0 + $1.totalPrice }
-        let maintenance = car.maintenanceHistory.filter { $0.date >= startDate }.reduce(0) { $0 + $1.price }
+        let maintenance = car.maintenanceHistory.filter { $0.date >= startDate && $0.type == .scheduled }.reduce(0) { $0 + $1.price }
+        let repairs = car.maintenanceHistory.filter { $0.date >= startDate && $0.type == .repair }.reduce(0) { $0 + $1.price }
         let washes = car.washes.filter { $0.date >= startDate }.reduce(0) { $0 + $1.price }
         let insurance = car.insurances.filter { $0.startDate >= startDate }.reduce(0) { $0 + $1.price }
         let tuning = car.tuningModifications.filter { $0.date >= startDate }.reduce(0) { $0 + $1.price }
-        let total = fuel + maintenance + washes + insurance + tuning
+        let tireServices = car.tireServices.filter { $0.date >= startDate }.reduce(0) { $0 + $1.price }
+        let otherExpenses = car.otherExpenses.filter { $0.date >= startDate }.reduce(0) { $0 + $1.price }
+        let total = fuel + maintenance + repairs + washes + insurance + tuning + tireServices + otherExpenses
         let kilometers = max(car.totalDrivenKilometers, 0)
         let perKilometer = kilometers > 0 ? total / Double(kilometers) : 0
         return StatsPresentation(
@@ -53,9 +56,12 @@ enum PresentationMapper {
             valuesByService: [
                 .fuel: fuel.formatted(.currency(code: "UAH")),
                 .maintenance: maintenance.formatted(.currency(code: "UAH")),
+                .repair: repairs.formatted(.currency(code: "UAH")),
                 .wash: washes.formatted(.currency(code: "UAH")),
                 .insurance: insurance.formatted(.currency(code: "UAH")),
-                .tuning: tuning.formatted(.currency(code: "UAH"))
+                .tuning: tuning.formatted(.currency(code: "UAH")),
+                .tireService: tireServices.formatted(.currency(code: "UAH")),
+                .otherExpenses: otherExpenses.formatted(.currency(code: "UAH"))
             ]
         )
     }
@@ -66,6 +72,8 @@ enum PresentationMapper {
         + car.washes.reduce(0) { $0 + $1.price }
         + car.insurances.reduce(0) { $0 + $1.price }
         + car.tuningModifications.reduce(0) { $0 + $1.price }
+        + car.tireServices.reduce(0) { $0 + $1.price }
+        + car.otherExpenses.reduce(0) { $0 + $1.price }
     }
 
     private static func averageConsumption(for car: Car) -> Double? {

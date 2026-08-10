@@ -65,8 +65,12 @@ enum CarServiceType: CaseIterable, Identifiable, Hashable {
             return "tuning"
         case .insurance:
             return "insurance"
-        default:
-            return nil
+        case .tireService:
+            return "tire_service"
+        case .repair:
+            return "repair"
+        case .otherExpenses:
+            return "other_expense"
         }
     }
     
@@ -77,7 +81,9 @@ enum CarServiceType: CaseIterable, Identifiable, Hashable {
         case .wash: return .wash(carID: carID)
         case .insurance: return .insurance(carID: carID)
         case .tuning: return .tuning(carID: carID)
-        case .tireService, .repair, .otherExpenses: return .unavailable(service: self)
+        case .tireService: return .tireService(carID: carID)
+        case .repair: return .repair(carID: carID)
+        case .otherExpenses: return .otherExpense(carID: carID)
         }
     }
 }

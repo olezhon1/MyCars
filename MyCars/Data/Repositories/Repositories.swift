@@ -15,6 +15,9 @@ protocol ExpenseRepository {
     func addInsurance(to carID: UUID, type: InsuranceType, policyNumber: String, companyName: String, startDate: Date, endDate: Date, price: Double) throws
     func addMaintenance(to carID: UUID, title: String, price: Double, mileage: Int, date: Date, notes: String?) throws
     func addTuningModification(to carID: UUID, name: String, price: Double, date: Date, mileage: Int) throws
+    func addRepair(to carID: UUID, title: String, price: Double, mileage: Int, date: Date, notes: String?) throws
+    func addTireService(to carID: UUID, title: String, price: Double, mileage: Int, date: Date, notes: String?) throws
+    func addOtherExpense(to carID: UUID, title: String, price: Double, mileage: Int?, date: Date, notes: String?) throws
 }
 
 enum RepositoryError: LocalizedError {
@@ -86,6 +89,30 @@ final class SwiftDataRepository: CarRepository, ExpenseRepository {
         let tuning = TuningModification(name: name, price: price, date: date, mileage: mileage)
         tuning.car = car
         context.insert(tuning)
+        try context.save()
+    }
+
+    func addRepair(to carID: UUID, title: String, price: Double, mileage: Int, date: Date, notes: String?) throws {
+        let car = try requiredCar(id: carID)
+        let repair = Maintenance(title: title, price: price, mileage: mileage, date: date, notes: notes, type: .repair)
+        repair.car = car
+        context.insert(repair)
+        try context.save()
+    }
+
+    func addTireService(to carID: UUID, title: String, price: Double, mileage: Int, date: Date, notes: String?) throws {
+        let car = try requiredCar(id: carID)
+        let service = TireService(title: title, price: price, mileage: mileage, date: date, notes: notes)
+        service.car = car
+        context.insert(service)
+        try context.save()
+    }
+
+    func addOtherExpense(to carID: UUID, title: String, price: Double, mileage: Int?, date: Date, notes: String?) throws {
+        let car = try requiredCar(id: carID)
+        let expense = OtherExpense(title: title, price: price, mileage: mileage, date: date, notes: notes)
+        expense.car = car
+        context.insert(expense)
         try context.save()
     }
 

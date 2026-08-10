@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "other_expense.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

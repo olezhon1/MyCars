@@ -30,7 +30,7 @@ struct MyCarsTests {
     }
 
     @Test func repositoryLinksExpenseToCar() throws {
-        let schema = Schema([Car.self, Insurance.self, TuningModification.self, CarWash.self, Maintenance.self, EnergyRefill.self])
+        let schema = Schema([Car.self, Insurance.self, TuningModification.self, CarWash.self, Maintenance.self, EnergyRefill.self, TireService.self, OtherExpense.self])
         let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: schema, configurations: [configuration])
         let repository = SwiftDataRepository(context: container.mainContext)
@@ -42,6 +42,24 @@ struct MyCarsTests {
         let savedCar = try #require(try repository.car(id: car.id))
         #expect(savedCar.washes.count == 1)
         #expect(savedCar.washes.first?.car?.id == car.id)
+    }
+
+    @Test func repositoryStoresNewExpenseTypes() throws {
+        let schema = Schema([Car.self, Insurance.self, TuningModification.self, CarWash.self, Maintenance.self, EnergyRefill.self, TireService.self, OtherExpense.self])
+        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: [configuration])
+        let repository = SwiftDataRepository(context: container.mainContext)
+        let car = makeCar(brand: "Dacia")
+        try repository.add(car)
+
+        try repository.addRepair(to: car.id, title: "Гальма", price: 2_000, mileage: 12_000, date: .now, notes: nil)
+        try repository.addTireService(to: car.id, title: "Балансування", price: 500, mileage: 12_100, date: .now, notes: nil)
+        try repository.addOtherExpense(to: car.id, title: "Паркування", price: 100, mileage: nil, date: .now, notes: nil)
+
+        let savedCar = try #require(try repository.car(id: car.id))
+        #expect(savedCar.maintenanceHistory.first?.type == .repair)
+        #expect(savedCar.tireServices.count == 1)
+        #expect(savedCar.otherExpenses.first?.mileage == nil)
     }
 
     @Test func addCarViewModelDoesNotCloseOnInvalidInput() {

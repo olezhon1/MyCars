@@ -9,7 +9,7 @@ struct MyCarsApp: App {
     @State private var router: AppRouter
 
     init() {
-        let schema = Schema([Car.self, Insurance.self, TuningModification.self, CarWash.self, Maintenance.self, EnergyRefill.self])
+        let schema = Schema([Car.self, Insurance.self, TuningModification.self, CarWash.self, Maintenance.self, EnergyRefill.self, TireService.self, OtherExpense.self])
         do {
             let modelContainer = try ModelContainer(for: schema, configurations: [ModelConfiguration(schema: schema)])
             self.modelContainer = modelContainer
