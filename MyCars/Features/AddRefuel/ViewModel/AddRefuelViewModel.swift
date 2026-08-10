@@ -1,0 +1,39 @@
+import Foundation
+import Observation
+
+@MainActor
+@Observable
+final class AddRefuelViewModel {
+    private let carID: UUID
+    private let repository: any ExpenseRepository
+    private let onSaved: () -> Void
+
+    var date = Date()
+    var mileage = ""
+    var amount = ""
+    var pricePerUnit = ""
+    var isFullCharge = true
+    private(set) var errorMessage: String?
+
+    init(carID: UUID, repository: any ExpenseRepository, onSaved: @escaping () -> Void) {
+        self.carID = carID
+        self.repository = repository
+        self.onSaved = onSaved
+    }
+
+    func save() {
+        do {
+            try repository.addRefill(
+                to: carID,
+                mileage: try FormValidation.integer(mileage, field: "Пробіг"),
+                amount: try FormValidation.decimal(amount, field: "Кількість палива", minimum: 0.01),
+                pricePerUnit: try FormValidation.decimal(pricePerUnit, field: "Ціна за одиницю", minimum: 0.01),
+                isFullCharge: isFullCharge,
+                date: date
+            )
+            onSaved()
+        } catch { errorMessage = error.localizedDescription }
+    }
+
+    func dismissError() { errorMessage = nil }
+}

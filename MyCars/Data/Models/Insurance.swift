@@ -37,6 +37,7 @@ class Insurance {
 }
 
 enum InsuranceType: String, CaseIterable {
+    case none = "Не обрано"
     case osago = "Автоцивілка"
     case kasko = "КАСКО"
     case greenCard = "Зелена картка"

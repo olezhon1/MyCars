@@ -1,36 +1,24 @@
-//
-//  MyCarsApp.swift
-//  MyCars
-//
-//  Created by Oleksandr Semeniuk on 05.06.2026.
-//
-
 import SwiftUI
 import SwiftData
 
 @main
+@MainActor
 struct MyCarsApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Car.self,
-            Insurance.self,
-            TuningModification.self,
-            CarWash.self,
-            Maintenance.self,
-            EnergyRefill.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+    private let modelContainer: ModelContainer
+    private let container: AppContainer
+    @State private var router: AppRouter
 
+    init() {
+        let schema = Schema([Car.self, Insurance.self, TuningModification.self, CarWash.self, Maintenance.self, EnergyRefill.self])
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            let modelContainer = try ModelContainer(for: schema, configurations: [ModelConfiguration(schema: schema)])
+            self.modelContainer = modelContainer
+            container = AppContainer(modelContext: modelContainer.mainContext)
+            _router = State(initialValue: AppRouter())
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
-    }()
 
-    @State private var router = AppRouter()
-    
-    init() {
         UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(named: "primary")
         UIPageControl.appearance().pageIndicatorTintColor = UIColor(named: "primary")?.withAlphaComponent(0.2)
         UINavigationBar.appearance().titleTextAttributes = [
@@ -38,12 +26,11 @@ struct MyCarsApp: App {
             .font: UIFont.systemFont(ofSize: 24, weight: .black)
         ]
     }
-    
+
     var body: some Scene {
         WindowGroup {
-            MainTabView()
-                .environment(router)
+            MainTabView(router: router, container: container)
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(modelContainer)
     }
 }

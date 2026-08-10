@@ -1,66 +1,47 @@
-//
-//  AddCarViewModel.swift
-//  MyCars
-//
-//  Created by Oleksandr Semeniuk on 24.06.2026.
-//
-
 import Foundation
 import Observation
-import SwiftData
-import UIKit
 
+@MainActor
 @Observable
-class AddCarViewModel {
-    private let router: AppRouter
-    private var context: ModelContext?
+final class AddCarViewModel {
+    private let repository: any CarRepository
+    private let onSaved: () -> Void
 
-    var selectedImageData: Data? = nil
-    var brand: String = ""
-    var model: String = ""
-    var year: String = ""
-    var purchasePrice: String = ""
-    var purchaseMileage: String = ""
-    var purchaseDate: Date = .now
+    var selectedImageData: Data?
+    var brand = ""
+    var model = ""
+    var year = ""
+    var purchasePrice = ""
+    var purchaseMileage = ""
+    var purchaseDate = Date.now
     var powertrain: PowertrainType = .petrol
-    var energyCapacity: String = ""
+    var energyCapacity = ""
+    private(set) var errorMessage: String?
 
-    init(router: AppRouter) {
-        self.router = router
+    init(repository: any CarRepository, onSaved: @escaping () -> Void) {
+        self.repository = repository
+        self.onSaved = onSaved
     }
-    
 
-    // MARK: - Actions
-
-    func setContext(_ context: ModelContext) {
-        self.context = context
-    }
-    
     func save() {
-        guard
-            let year = Int(year),
-            let price = Double(purchasePrice),
-            let mileage = Int(purchaseMileage),
-            let capacity = Double(energyCapacity),
-            !brand.isEmpty,
-            !model.isEmpty
-        else {
-            return
+        do {
+            let car = Car(
+                brand: try FormValidation.required(brand, field: "Марка"),
+                model: try FormValidation.required(model, field: "Модель"),
+                year: try FormValidation.integer(year, field: "Рік", minimum: 1886),
+                purchasePrice: try FormValidation.decimal(purchasePrice, field: "Ціна купівлі"),
+                purchaseMileage: try FormValidation.integer(purchaseMileage, field: "Пробіг"),
+                purchaseDate: purchaseDate,
+                powertrain: powertrain,
+                energyCapacity: try FormValidation.decimal(energyCapacity, field: "Об’єм / ємність"),
+                imageData: selectedImageData
+            )
+            try repository.add(car)
+            onSaved()
+        } catch {
+            errorMessage = error.localizedDescription
         }
-
-        let car = Car(
-            brand: brand,
-            model: model,
-            year: year,
-            purchasePrice: price,
-            purchaseMileage: mileage,
-            purchaseDate: purchaseDate,
-            powertrain: powertrain,
-            energyCapacity: capacity,
-            imageData: selectedImageData
-        )
-
-        context?.insert(car)
-        router.pop()
     }
+
+    func dismissError() { errorMessage = nil }
 }

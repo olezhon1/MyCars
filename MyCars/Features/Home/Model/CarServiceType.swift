@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-enum CarServiceType: CaseIterable, Identifiable {
+enum CarServiceType: CaseIterable, Identifiable, Hashable {
 
     case fuel
     case maintenance
@@ -70,16 +70,13 @@ enum CarServiceType: CaseIterable, Identifiable {
         }
     }
     
-    var route: HomeRoute {
+    func route(for carID: UUID) -> HomeRoute {
         switch self {
-        case .fuel: return .fuel
-        case .maintenance: return .maintenance
-        case .wash: return .wash
-        case .tireService: return .tireService
-        case .repair: return .repair
-        case .otherExpenses: return .otherExpenses
-        case .insurance: return .insurance
-        case .tuning: return .tuning
+        case .fuel: return .fuel(carID: carID)
+        case .maintenance: return .maintenance(carID: carID)
+        case .wash: return .wash(carID: carID)
+        case .insurance: return .insurance(carID: carID)
+        case .tireService, .repair, .otherExpenses, .tuning: return .unavailable(service: self)
         }
     }
 }

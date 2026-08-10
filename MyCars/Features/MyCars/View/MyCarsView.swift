@@ -6,20 +6,19 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct MyCarsView: View {
-    
-    @Query private var cars: [Car]
+
     @Bindable var viewModel: MyCarsViewModel
 
     var body: some View {
         content(vm: viewModel)
-            .onAppear {
-                viewModel.setCars(cars)
-            }
+            .onAppear { viewModel.load() }
+            .alert("Помилка", isPresented: Binding(get: { viewModel.errorMessage != nil }, set: { if !$0 { viewModel.dismissError() } })) {
+                Button("OK") { viewModel.dismissError() }
+            } message: { Text(viewModel.errorMessage ?? "Невідома помилка") }
     }
-    
+
     @ViewBuilder
     private func content(vm: MyCarsViewModel) -> some View {
 
@@ -30,14 +29,17 @@ struct MyCarsView: View {
             }
             .padding(.bottom, 24)
             .padding(.horizontal, 20)
-            
+
             VStack(spacing: 12) {
-                ForEach(cars, id: \.self) { car in
-                    CarCard(car: car)
+                ForEach(vm.cars) { car in
+                    CarCard(car: car, isSelected: vm.selectedCarID == car.id)
+                        .onTapGesture {
+                            vm.onCarSelected(car.id)
+                        }
                 }
             }
             .padding(.horizontal, 20)
-            
+
             CustomButton(title: "Додати нове авто", image: Image("car")) {
                 vm.onAddCarTapped()
             }

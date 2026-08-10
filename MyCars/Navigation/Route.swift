@@ -6,63 +6,20 @@
 //
 
 import Foundation
-import SwiftUI
 
-protocol Route: Hashable {
-    associatedtype Destination: View
-    @ViewBuilder func view(router: AppRouter) -> Destination
+// REVIEW: Routes contain stable identifiers only; they no longer construct views or retain SwiftData models.
+enum HomeRoute: Hashable {
+    case fuel(carID: UUID)
+    case maintenance(carID: UUID)
+    case wash(carID: UUID)
+    case insurance(carID: UUID)
+    case unavailable(service: CarServiceType)
 }
 
-enum HomeRoute: Route {
-    case home
-    case fuel
-    case maintenance
-    case wash
-    case tireService
-    case repair
-    case otherExpenses
-    case insurance
-    case tuning
-    
-    @ViewBuilder
-    func view(router: AppRouter) -> some View {
-        switch self {
-        case .home:
-            HomeView(viewModel: HomeViewModel(router: router))
-        default:
-            EmptyView()
-        }
-    }
-}
-
-enum CarsRoute: Route {
-    case myCars
+enum CarsRoute: Hashable {
     case addCar
-    
-    @ViewBuilder
-    func view(router: AppRouter) -> some View {
-        switch self {
-        case .myCars:
-            MyCarsView(viewModel: MyCarsViewModel(router: router))
-        case .addCar:
-            AddCarView(viewModel: AddCarViewModel(router: router))
-        }
-    }
 }
 
-enum StatsRoute: Route {
-    
-    @ViewBuilder
-    func view(router: AppRouter) -> some View {
+enum StatsRoute: Hashable { case placeholder }
 
-    }
-}
-
-enum SettingsRoute: Route {
-    
-    @ViewBuilder
-    func view(router: AppRouter) -> some View {
-        
-    }
-}
-
+enum SettingsRoute: Hashable { case placeholder }

@@ -1,24 +1,43 @@
-//
-//  HomeViewModel.swift
-//  MyCars
-//
-//  Created by Oleksandr Semeniuk on 06.06.2026.
-//
-
 import Foundation
 import Observation
 
+@MainActor
 @Observable
 final class HomeViewModel {
-    private let router: AppRouter
+    private let repository: any CarRepository
+    private let selection: CarSelectionStore
+    private let onRoute: (HomeRoute) -> Void
 
-    init(router: AppRouter) {
-        self.router = router
+    private(set) var cars: [CarPresentation] = []
+    private(set) var selectedCarID: UUID?
+    private(set) var errorMessage: String?
+
+    init(repository: any CarRepository, selection: CarSelectionStore, onRoute: @escaping (HomeRoute) -> Void) {
+        self.repository = repository
+        self.selection = selection
+        self.onRoute = onRoute
     }
 
-    // MARK: - Actions
-    
+    func load() {
+        do {
+            let models = try repository.fetchCars()
+            selection.reconcile(with: models)
+            selectedCarID = selection.selectedCarID
+            cars = models.map(PresentationMapper.car)
+            errorMessage = nil
+        } catch { errorMessage = error.localizedDescription }
+    }
+
+    func selectCar(_ id: UUID) {
+        selection.select(id)
+        selectedCarID = id
+    }
+
     func didSelect(_ type: CarServiceType) {
-        router.push(type.route)
+        guard let selectedCarID else {
+            errorMessage = "Спочатку додайте автомобіль."
+            return
+        }
+        onRoute(type.route(for: selectedCarID))
     }
 }

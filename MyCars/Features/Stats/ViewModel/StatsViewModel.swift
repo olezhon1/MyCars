@@ -1,29 +1,30 @@
-//
-//  StatsViewModel.swift
-//  MyCars
-//
-//  Created by Oleksandr Semeniuk on 24.06.2026.
-//
-
 import Foundation
 import Observation
 
+@MainActor
 @Observable
-class StatsViewModel {
-    private let router: AppRouter
-    var selectedPeriod: StatsPeriod = .month
+final class StatsViewModel {
+    private let repository: any CarRepository
+    private let selection: CarSelectionStore
 
-    init(router: AppRouter) {
-        self.router = router
+    var selectedPeriod: StatsPeriod = .month {
+        didSet { load() }
+    }
+    private(set) var stats: StatsPresentation = .empty
+    private(set) var errorMessage: String?
+
+    init(repository: any CarRepository, selection: CarSelectionStore) {
+        self.repository = repository
+        self.selection = selection
     }
 
-    // MARK: - Actions
-    
-    func onAddCarTapped() {
-        router.push(CarsRoute.addCar)
-    }
-    
-    func didSelect(_ type: CarServiceType) {
-        router.push(type.route)
+    func load() {
+        do {
+            let cars = try repository.fetchCars()
+            selection.reconcile(with: cars)
+            let selected = cars.first { $0.id == selection.selectedCarID }
+            stats = PresentationMapper.stats(for: selected, period: selectedPeriod)
+            errorMessage = nil
+        } catch { errorMessage = error.localizedDescription }
     }
 }

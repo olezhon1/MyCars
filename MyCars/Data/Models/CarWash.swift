@@ -18,10 +18,10 @@ class CarWash {
     
     var car: Car?
     
-    init(price: Double, date: Date = Date(), mileage: Int? = nil) {
+    init(price: Double, mileage: Int? = nil, date: Date = Date()) {
         self.id = UUID()
         self.price = price
-        self.date = date
         self.mileage = mileage
+        self.date = date
     }
 }

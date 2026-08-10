@@ -17,14 +17,10 @@ final class AppRouter {
     var statsPath = NavigationPath()
     var settingsPath = NavigationPath()
     
-    func push(_ route: some Route) {
-        switch selectedTab {
-        case .home: homePath.append(route)
-        case .myCars: carsPath.append(route)
-        case .stats: statsPath.append(route)
-        case .settings: settingsPath.append(route)
-        }
-    }
+    func push(_ route: HomeRoute) { homePath.append(route) }
+    func push(_ route: CarsRoute) { carsPath.append(route) }
+    func push(_ route: StatsRoute) { statsPath.append(route) }
+    func push(_ route: SettingsRoute) { settingsPath.append(route) }
     
     func pop() {
         switch selectedTab {

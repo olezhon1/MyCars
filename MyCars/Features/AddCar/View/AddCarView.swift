@@ -6,18 +6,21 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct AddCarView: View {
     
     @Bindable var viewModel: AddCarViewModel
-    @Environment(\.modelContext) private var context
-
     var body: some View {
         content()
-            .onAppear {
-                viewModel.setContext(context)
+            .alert("Не вдалося зберегти", isPresented: errorPresented) {
+                Button("OK") { viewModel.dismissError() }
+            } message: {
+                Text(viewModel.errorMessage ?? "Невідома помилка")
             }
+    }
+
+    private var errorPresented: Binding<Bool> {
+        Binding(get: { viewModel.errorMessage != nil }, set: { if !$0 { viewModel.dismissError() } })
     }
     
     @ViewBuilder
@@ -38,6 +41,9 @@ struct AddCarView: View {
                 LabeledTextField(title: "Ціна купівлі", text: $viewModel.purchasePrice, keyboardType: .decimalPad)
                 LabeledTextField(title: "Пробіг при купівлі", text: $viewModel.purchaseMileage, keyboardType: .numberPad)
                 LabeledTextField(title: "Об'єм / ємність", text: $viewModel.energyCapacity, keyboardType: .decimalPad)
+                Picker("Тип двигуна", selection: $viewModel.powertrain) {
+                    ForEach(PowertrainType.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                }
                 
                 DatePicker("Дата купівлі", selection: $viewModel.purchaseDate, displayedComponents: .date)
                 

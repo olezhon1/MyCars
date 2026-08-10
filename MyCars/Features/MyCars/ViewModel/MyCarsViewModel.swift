@@ -1,29 +1,39 @@
-//
-//  MyCarsViewModel.swift
-//  MyCars
-//
-//  Created by Oleksandr Semeniuk on 19.06.2026.
-//
-
 import Foundation
 import Observation
 
+@MainActor
 @Observable
-class MyCarsViewModel {
-    private let router: AppRouter
-    private(set) var cars: [Car] = []
+final class MyCarsViewModel {
+    private let repository: any CarRepository
+    private let selection: CarSelectionStore
+    private let onAddCar: () -> Void
 
-    init(router: AppRouter) {
-        self.router = router
+    private(set) var cars: [CarPresentation] = []
+    private(set) var selectedCarID: UUID?
+    private(set) var errorMessage: String?
+
+    init(repository: any CarRepository, selection: CarSelectionStore, onAddCar: @escaping () -> Void) {
+        self.repository = repository
+        self.selection = selection
+        self.onAddCar = onAddCar
     }
 
-    // MARK: - Actions
-    
-    func setCars(_ cars: [Car]) {
-        self.cars = cars
+    func load() {
+        do {
+            let models = try repository.fetchCars()
+            selection.reconcile(with: models)
+            selectedCarID = selection.selectedCarID
+            cars = models.map(PresentationMapper.car)
+            errorMessage = nil
+        } catch { errorMessage = error.localizedDescription }
     }
-    
-    func onAddCarTapped() {
-        router.push(CarsRoute.addCar)
+
+    func onAddCarTapped() { onAddCar() }
+
+    func onCarSelected(_ carID: UUID) {
+        selection.select(carID)
+        selectedCarID = carID
     }
+
+    func dismissError() { errorMessage = nil }
 }

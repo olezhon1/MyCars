@@ -24,8 +24,9 @@ class EnergyRefill {
     
     var car: Car?
     
-    init(mileage: Int, amount: Double, pricePerUnit: Double, isFullCharge: Bool, date: Date = Date()) {
+    init(car: Car, mileage: Int, amount: Double, pricePerUnit: Double, isFullCharge: Bool, date: Date = Date()) {
         self.id = UUID()
+        self.car = car
         self.mileage = mileage
         self.amount = amount
         self.pricePerUnit = pricePerUnit

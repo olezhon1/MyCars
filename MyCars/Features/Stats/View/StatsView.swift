@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct StatsView: View {
     
@@ -14,6 +13,7 @@ struct StatsView: View {
 
     var body: some View {
         content()
+            .onAppear { viewModel.load() }
     }
     
     @ViewBuilder
@@ -23,8 +23,8 @@ struct StatsView: View {
             periodPicker(vm: viewModel)
 
             HStack(alignment: .center, spacing: 20) {
-                StatView(title: "Всього витрачено", value: "19 032 грн", style: .horizontal)
-                StatView(title: "В километрах", value: "19 грн / км", style: .horizontal)
+                StatView(title: "Всього витрачено", value: viewModel.stats.totalExpenses, style: .horizontal)
+                StatView(title: "На кілометр", value: viewModel.stats.costPerKilometer, style: .horizontal)
             }
             .padding(.bottom, 24)
             .padding(.horizontal, 20)
@@ -46,7 +46,7 @@ struct StatsView: View {
             spacing: 12
         ) {
             ForEach(CarServiceType.allCases) { type in
-                CarServiceStatCard(type: type, value: "12 000 грн")
+                CarServiceStatCard(type: type, value: vm.stats.valuesByService[type] ?? "0 грн")
             }
         }
         .padding(.horizontal, 16)
@@ -76,8 +76,4 @@ struct StatsView: View {
         }
         .padding(.vertical, 20)
     }
-}
-
-#Preview {
-    StatsView(viewModel: StatsViewModel(router: AppRouter()))
 }

@@ -34,7 +34,7 @@ class Car {
     }
     
     var totalDrivenKilometers: Int {
-        currentMileage - purchaseMileage
+        max(0, currentMileage - purchaseMileage)
     }
     
     @Relationship(deleteRule: .cascade, inverse: \Insurance.car)

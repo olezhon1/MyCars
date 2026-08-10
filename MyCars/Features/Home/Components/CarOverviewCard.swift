@@ -1,44 +1,27 @@
-//
-//  CarOverviewCard.swift
-//  MyCars
-//
-//  Created by Oleksandr Semeniuk on 18.06.2026.
-//
-
 import SwiftUI
 
 struct CarOverviewCard: View {
+    let car: CarPresentation
 
-    private var insuranceDate: Date {
-        var components = DateComponents()
-        components.year = 2026
-        components.month = 12
-        components.day = 21
-        components.hour = 20
-        components.minute = 25
-        
-        return Calendar.current.date(from: components)!
-    }
-    
     var body: some View {
         VStack(spacing: 16) {
+            Text(car.title).font(.title2).foregroundColor(Color("primary"))
+            Text(car.currentMileage).font(.headline).foregroundColor(Color("primary"))
 
-            Text("Dacia Logan 1 - 2005")
-                .font(.title2)
-                .foregroundColor(Color("primary"))
+            if let insuranceEndDate = car.insuranceEndDate {
+                InsuranceTickerView(validUntil: insuranceEndDate)
+            }
 
-            Text("245 422 км")
-                .font(.headline)
-                .foregroundColor(Color("primary"))
-
-            InsuranceTickerView(validUntil: insuranceDate)
-
-            Image("car_banner")
+            if let data = car.imageData, let image = UIImage(data: data) {
+                Image(uiImage: image).resizable().scaledToFit().frame(height: 130)
+            } else {
+                Image("car_banner").resizable().scaledToFit().frame(height: 130)
+            }
 
             HStack(spacing: 12) {
-                StatView(title: "ТО через", value: "555 км", style: .vertical, alignment: .center)
-                StatView(title: "Затрати", value: "34 000 грн", style: .vertical, alignment: .center)
-                StatView(title: "Розхід", value: "6.7 л", style: .vertical, alignment: .center)
+                StatView(title: "Пробіг при купівлі", value: car.purchaseMileage, style: .vertical, alignment: .center)
+                StatView(title: "Витрати", value: car.totalExpenses, style: .vertical, alignment: .center)
+                StatView(title: "Розхід", value: car.averageConsumption, style: .vertical, alignment: .center)
             }
         }
     }

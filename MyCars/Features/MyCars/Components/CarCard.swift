@@ -1,84 +1,43 @@
-//
-//  CarCard.swift
-//  MyCars
-//
-//  Created by Oleksandr Semeniuk on 19.06.2026.
-//
-
 import SwiftUI
 
 struct CarCard: View {
-    let car: Car
-    
+    let car: CarPresentation
+    let isSelected: Bool
+
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            title(car: car)
-            carInfo(car: car)
-            InsuranceTickerView(validUntil: car.insurances.first?.endDate ?? Date())
-                .cornerRadius(8)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(car.title).font(.system(size: 24, weight: .black))
+                Text(car.purchasePrice).font(.system(size: 20, weight: .black))
+            }
+
+            HStack(spacing: 16) {
+                carImage
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 24) {
+                    StatView(title: "Пробіг при купівлі", value: car.purchaseMileage, style: .vertical)
+                    StatView(title: "Середній розхід", value: car.averageConsumption, style: .vertical)
+                    StatView(title: "Пробіг зараз", value: car.currentMileage, style: .vertical)
+                    StatView(title: "Вкладено", value: car.totalExpenses, style: .vertical)
+                }
+            }
+
+            if let insuranceEndDate = car.insuranceEndDate {
+                InsuranceTickerView(validUntil: insuranceEndDate).clipShape(.rect(cornerRadius: 8))
+            }
         }
         .padding(10)
-        .overlay(
+        .overlay {
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Color("ticker_background"), lineWidth: 6)
-        )
-        
+                .stroke(isSelected ? Color("primary") : Color("ticker_background"), lineWidth: isSelected ? 4 : 2)
+        }
     }
-    
+
     @ViewBuilder
-    private func title(car: Car) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text("\(car.brand) \(car.model) - \(car.year)")
-                .font(.system(size: 24, weight: .black))
-            Text("\(car.purchasePrice, specifier: "%.2f")$")
-                .font(.system(size: 24, weight: .black))
+    private var carImage: some View {
+        if let data = car.imageData, let image = UIImage(data: data) {
+            Image(uiImage: image).resizable().scaledToFill().frame(width: 125, height: 100).clipped().clipShape(.rect(cornerRadius: 12))
+        } else {
+            Image("car_banner").resizable().scaledToFit().frame(width: 125)
         }
-    }
-    
-    @ViewBuilder
-    private func carInfo(car: Car) -> some View {
-        HStack(spacing: 16) {
-            if let data = car.imageData, let uiImage = UIImage(data: data) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(maxWidth: 125)
-                    .cornerRadius(12)
-
-            } else {
-                Image("car_banner")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundColor(.gray)
-                    .frame(maxWidth: 125)
-
-            }
-            
-            LazyVGrid(
-                columns: [
-                    GridItem(.flexible(), spacing: 12),
-                    GridItem(.flexible(), spacing: 12)
-                ],
-                spacing: 24
-            ) {
-                StatView(title: "Куплена с пробегом", value: "205 422 км", style: .vertical)
-                StatView(title: "Расход средний", value: "6.7 л", style: .vertical)
-                StatView(title: "Пробег сейчас", value: "245 км", style: .vertical)
-                StatView(title: "Вложено", value: "34 000 грн", style: .vertical)
-            }
-            .frame(maxWidth: .infinity)
-        }
-    }
-    
-    private func statView(title: String, value: String) -> some View {
-        VStack(spacing: 6) {
-            Text(title)
-                .font(.caption)
-
-            Text(value)
-                .font(.headline.bold())
-        }
-        .foregroundColor(Color("primary"))
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

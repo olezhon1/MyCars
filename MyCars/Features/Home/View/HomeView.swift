@@ -9,11 +9,17 @@ import SwiftUI
 
 struct HomeView: View {
     @Bindable var viewModel: HomeViewModel
-    @State private var selectedIndex = 0
-    @State private var scrollPosition: Int? = 0
+    @State private var scrollPosition: UUID?
 
     var body: some View {
         content()
+            .onAppear {
+                viewModel.load()
+                scrollPosition = viewModel.selectedCarID
+            }
+            .onChange(of: scrollPosition) { _, id in
+                if let id { viewModel.selectCar(id) }
+            }
     }
 
     @ViewBuilder
@@ -38,10 +44,10 @@ struct HomeView: View {
     private func carListSection(vm: HomeViewModel) -> some View {
         ScrollView(.horizontal) {
             HStack(spacing: 0) {
-                ForEach(0..<3, id: \.self) { index in
-                    CarOverviewCard()
+                ForEach(vm.cars) { car in
+                    CarOverviewCard(car: car)
                         .containerRelativeFrame(.horizontal)
-                        .tag(index)
+                        .id(car.id)
                 }
             }
             .scrollTargetLayout()
@@ -51,9 +57,9 @@ struct HomeView: View {
         .scrollPosition(id: $scrollPosition)
 
         HStack(spacing: 6) {
-            ForEach(0..<3, id: \.self) { index in
+            ForEach(vm.cars) { car in
                 Circle()
-                    .fill(scrollPosition == index ? Color("primary") : Color("primary").opacity(0.3))
+                    .fill(scrollPosition == car.id ? Color("primary") : Color("primary").opacity(0.3))
                     .frame(width: 6, height: 6)
             }
         }
@@ -76,8 +82,4 @@ struct HomeView: View {
             }
         }
     }
-}
-
-#Preview {
-    HomeView(viewModel: HomeViewModel(router: AppRouter()))
 }
