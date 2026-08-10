@@ -70,6 +70,8 @@ struct MainTabView: View {
             AddInsuranceView(viewModel: AddInsuranceViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
         case .maintenance(let carID):
             AddMaintenanceView(viewModel: AddMaintenanceViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
+        case .tuning(let carID):
+            AddTuningModificationView(viewModel: AddTuningModificationViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
         case .unavailable(let service):
             ContentUnavailableView(service.title, systemImage: "wrench.and.screwdriver", description: Text("Ця функція ще в розробці"))
         }

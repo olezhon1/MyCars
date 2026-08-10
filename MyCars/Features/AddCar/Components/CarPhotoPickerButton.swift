@@ -32,11 +32,8 @@ struct CarPhotoPickerButton: View {
                         .padding(12)
                 }
                 
-                Button {
-                } label: {
-                    RoundImageButton(image: "camera")
-                }
-                .padding(10)
+                RoundImageButton(image: "camera")
+                    .padding(10)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .clipped()

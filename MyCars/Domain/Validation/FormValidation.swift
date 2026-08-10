@@ -8,7 +8,10 @@ enum FormValidation {
     }
 
     static func integer(_ value: String, field: String, minimum: Int = 0) throws -> Int {
-        guard let number = Int(value), number >= minimum else {
+        guard let number = Int(value) else {
+            throw ValidationError.message("Поле «\(field)» містить некоректне ціле число.")
+        }
+        guard number >= minimum else {
             throw ValidationError.message("Поле «\(field)» повинно містити число не менше \(minimum).")
         }
         return number
@@ -16,7 +19,10 @@ enum FormValidation {
 
     static func decimal(_ value: String, field: String, minimum: Double = 0) throws -> Double {
         let normalized = value.replacingOccurrences(of: ",", with: ".")
-        guard let number = Double(normalized), number >= minimum else {
+        guard let number = Double(normalized) else {
+            throw ValidationError.message("Поле «\(field)» містить некоректне число.")
+        }
+        guard number >= minimum else {
             throw ValidationError.message("Поле «\(field)» повинно містити число не менше \(minimum).")
         }
         return number

@@ -14,6 +14,7 @@ protocol ExpenseRepository {
     func addWash(to carID: UUID, price: Double, mileage: Int?, date: Date) throws
     func addInsurance(to carID: UUID, type: InsuranceType, policyNumber: String, companyName: String, startDate: Date, endDate: Date, price: Double) throws
     func addMaintenance(to carID: UUID, title: String, price: Double, mileage: Int, date: Date, notes: String?) throws
+    func addTuningModification(to carID: UUID, name: String, price: Double, date: Date, mileage: Int) throws
 }
 
 enum RepositoryError: LocalizedError {
@@ -77,6 +78,14 @@ final class SwiftDataRepository: CarRepository, ExpenseRepository {
         let maintenance = Maintenance(title: title, price: price, mileage: mileage, date: date, notes: notes)
         maintenance.car = car
         context.insert(maintenance)
+        try context.save()
+    }
+    
+    func addTuningModification(to carID: UUID, name: String, price: Double, date: Date, mileage: Int) throws {
+        let car = try requiredCar(id: carID)
+        let tuning = TuningModification(name: name, price: price, date: date, mileage: mileage)
+        tuning.car = car
+        context.insert(tuning)
         try context.save()
     }
 

@@ -76,7 +76,8 @@ enum CarServiceType: CaseIterable, Identifiable, Hashable {
         case .maintenance: return .maintenance(carID: carID)
         case .wash: return .wash(carID: carID)
         case .insurance: return .insurance(carID: carID)
-        case .tireService, .repair, .otherExpenses, .tuning: return .unavailable(service: self)
+        case .tuning: return .tuning(carID: carID)
+        case .tireService, .repair, .otherExpenses: return .unavailable(service: self)
         }
     }
 }

@@ -11,6 +11,7 @@ import Foundation
 enum HomeRoute: Hashable {
     case fuel(carID: UUID)
     case maintenance(carID: UUID)
+    case tuning(carID: UUID)
     case wash(carID: UUID)
     case insurance(carID: UUID)
     case unavailable(service: CarServiceType)
