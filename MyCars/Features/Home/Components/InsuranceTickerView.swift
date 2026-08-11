@@ -20,6 +20,23 @@ struct InsuranceTickerView: View {
         return "СТРАХОВКА ДІЙСНА ДО \(formatter.string(from: validUntil))"
     }
 
+    private var backgroundColor: Color {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: .now)
+        let expirationDate = calendar.startOfDay(for: validUntil)
+
+        if today > expirationDate {
+            return Color("insurance_expired")
+        }
+
+        let warningDate = calendar.date(byAdding: .month, value: -1, to: expirationDate) ?? expirationDate
+        if today >= warningDate {
+            return Color("insurance_warning")
+        }
+
+        return Color("ticker_background")
+    }
+
     var body: some View {
         GeometryReader { containerGeo in
             HStack(spacing: 8) {
@@ -32,7 +49,7 @@ struct InsuranceTickerView: View {
             .clipped()
         }
         .frame(height: 18)
-        .background(Color("ticker_background"))
+        .background(backgroundColor)
         .onChange(of: textWidth) { _, newValue in
             guard let w = newValue, !hasStarted else { return }
             hasStarted = true

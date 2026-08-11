@@ -84,8 +84,8 @@ class Car {
     @Relationship(deleteRule: .cascade, inverse: \OtherExpense.car)
     var otherExpenses: [OtherExpense] = []
     
-    var activeInsurance: Insurance? {
-        insurances.first(where: { $0.isActive })
+    var latestInsurance: Insurance? {
+        insurances.max { $0.endDate < $1.endDate }
     }
     
     init(brand: String, model: String, year: Int, purchasePrice: Double, purchaseMileage: Int, purchaseDate: Date, powertrain: PowertrainType, energyCapacity: Double, imageData: Data? = nil) {

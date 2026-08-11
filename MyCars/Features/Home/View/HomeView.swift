@@ -43,7 +43,7 @@ struct HomeView: View {
     @ViewBuilder
     private func carListSection(vm: HomeViewModel) -> some View {
         ScrollView(.horizontal) {
-            HStack(spacing: 0) {
+            HStack(spacing: 16) {
                 ForEach(vm.cars) { car in
                     CarOverviewCard(car: car)
                         .containerRelativeFrame(.horizontal)
@@ -52,7 +52,7 @@ struct HomeView: View {
             }
             .scrollTargetLayout()
         }
-        .scrollTargetBehavior(.paging)
+        .scrollTargetBehavior(.viewAligned(limitBehavior: .alwaysByOne))
         .scrollIndicators(.hidden)
         .scrollPosition(id: $scrollPosition)
 

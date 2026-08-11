@@ -25,7 +25,7 @@ struct LabeledTextField: View {
         case .focused:
             Color("field_focused")
         case .invalid:
-            .red
+            Color("field_error")
         case .idle, .disabled:
             .secondary
         }

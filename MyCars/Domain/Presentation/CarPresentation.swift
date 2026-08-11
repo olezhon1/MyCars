@@ -34,7 +34,7 @@ enum PresentationMapper {
             totalExpenses: total.formatted(.currency(code: "UAH")),
             averageConsumption: averageConsumption(for: car).map { "\($0.formatted(.number.precision(.fractionLength(1)))) л" } ?? "—",
             imageData: car.imageData,
-            insuranceEndDate: car.activeInsurance?.endDate
+            insuranceEndDate: car.latestInsurance?.endDate
         )
     }
 

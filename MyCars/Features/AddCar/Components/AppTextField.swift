@@ -41,7 +41,7 @@ struct AppTextField: View {
         case .focused:
             Color("field_focused")
         case .invalid:
-            .red
+            Color("field_error")
         case .idle, .disabled:
             Color("field_border")
         }
@@ -85,7 +85,7 @@ struct AppTextField: View {
             if let errorMessage {
                 Text(errorMessage)
                     .font(.system(size: 12))
-                    .foregroundStyle(.red)
+                    .foregroundStyle(Color("field_error"))
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
