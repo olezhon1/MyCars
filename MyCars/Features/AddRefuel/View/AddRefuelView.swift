@@ -49,9 +49,6 @@ struct AddRefuelView: View {
                     validator: TextFieldValidator.decimal(field: "Ціна за одиницю", minimum: 0.01)
                 )
 
-                Toggle("Повна заправка", isOn: $viewModel.isFullCharge)
-                    .padding(.vertical, 4)
-
                 DatePicker("Дата заправки", selection: $viewModel.date, displayedComponents: .date)
 
                 CustomButton(title: "Зберегти") {

@@ -19,6 +19,10 @@ final class AddOtherExpenseViewModel {
         self.carID = carID
         self.repository = repository
         self.onSaved = onSaved
+
+        if let currentMileage = try? repository.currentMileage(for: carID) {
+            mileage = String(currentMileage)
+        }
     }
 
     func save() {

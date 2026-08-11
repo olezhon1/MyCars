@@ -12,13 +12,16 @@ final class AddRefuelViewModel {
     var mileage = ""
     var amount = ""
     var pricePerUnit = ""
-    var isFullCharge = true
     private(set) var errorMessage: String?
 
     init(carID: UUID, repository: any ExpenseRepository, onSaved: @escaping () -> Void) {
         self.carID = carID
         self.repository = repository
         self.onSaved = onSaved
+
+        if let currentMileage = try? repository.currentMileage(for: carID) {
+            mileage = String(currentMileage)
+        }
     }
 
     func save() {
@@ -29,7 +32,6 @@ final class AddRefuelViewModel {
                 mileage: try FormValidation.integer(mileage, field: "Пробіг", minimum: currentMileage),
                 amount: try FormValidation.decimal(amount, field: "Кількість палива", minimum: 0.01),
                 pricePerUnit: try FormValidation.decimal(pricePerUnit, field: "Ціна за одиницю", minimum: 0.01),
-                isFullCharge: isFullCharge,
                 date: date
             )
             onSaved()
