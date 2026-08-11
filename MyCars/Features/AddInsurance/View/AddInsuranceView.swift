@@ -28,10 +28,24 @@ struct AddInsuranceView: View {
         ScrollView {
             VStack(spacing: 16) {
                 
-                LabeledTextField(title: "Номер полісу", text: $viewModel.policyNumber)
-                LabeledTextField(title: "Страхова компанія", text: $viewModel.companyName)
+                LabeledTextField(
+                    title: "Номер полісу",
+                    text: $viewModel.policyNumber,
+                    validator: TextFieldValidator.required(field: "Номер полісу")
+                )
+                LabeledTextField(
+                    title: "Страхова компанія",
+                    text: $viewModel.companyName,
+                    validator: TextFieldValidator.required(field: "Страхова компанія")
+                )
                 
-                LabeledTextField(title: "Вартість", text: $viewModel.price, keyboardType: .decimalPad)
+                LabeledTextField(
+                    title: "Вартість",
+                    text: $viewModel.price,
+                    keyboardType: .decimalPad,
+                    unit: .hryvnias,
+                    validator: TextFieldValidator.decimal(field: "Вартість", minimum: 0.01)
+                )
 
                 DatePicker("Дата початку", selection: $viewModel.startDate, displayedComponents: .date)
                 DatePicker("Дата закінчення", selection: $viewModel.endDate, displayedComponents: .date)
@@ -49,7 +63,6 @@ struct AddInsuranceView: View {
                 .padding(.horizontal, 40)
             }
             .padding()
-            .textFieldStyle(.roundedBorder)
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)

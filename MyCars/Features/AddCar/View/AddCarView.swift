@@ -35,12 +35,43 @@ struct AddCarView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .frame(height: 160)
-                LabeledTextField(title: "Марка", text: $viewModel.brand)
-                LabeledTextField(title: "Модель", text: $viewModel.model)
-                LabeledTextField(title: "Рік", text: $viewModel.year, keyboardType: .numberPad)
-                LabeledTextField(title: "Ціна купівлі", text: $viewModel.purchasePrice, keyboardType: .decimalPad)
-                LabeledTextField(title: "Пробіг при купівлі", text: $viewModel.purchaseMileage, keyboardType: .numberPad)
-                LabeledTextField(title: "Об'єм / ємність", text: $viewModel.energyCapacity, keyboardType: .decimalPad)
+                LabeledTextField(
+                    title: "Марка",
+                    text: $viewModel.brand,
+                    validator: TextFieldValidator.required(field: "Марка")
+                )
+                LabeledTextField(
+                    title: "Модель",
+                    text: $viewModel.model,
+                    validator: TextFieldValidator.required(field: "Модель")
+                )
+                LabeledTextField(
+                    title: "Рік",
+                    text: $viewModel.year,
+                    keyboardType: .numberPad,
+                    validator: TextFieldValidator.integer(field: "Рік", minimum: 1886)
+                )
+                LabeledTextField(
+                    title: "Ціна купівлі",
+                    text: $viewModel.purchasePrice,
+                    keyboardType: .decimalPad,
+                    unit: .hryvnias,
+                    validator: TextFieldValidator.decimal(field: "Ціна купівлі")
+                )
+                LabeledTextField(
+                    title: "Пробіг при купівлі",
+                    text: $viewModel.purchaseMileage,
+                    keyboardType: .numberPad,
+                    unit: .kilometers,
+                    validator: TextFieldValidator.integer(field: "Пробіг")
+                )
+                LabeledTextField(
+                    title: "Об'єм / ємність",
+                    text: $viewModel.energyCapacity,
+                    keyboardType: .decimalPad,
+                    unit: .liters,
+                    validator: TextFieldValidator.decimal(field: "Об’єм / ємність")
+                )
                 Picker("Тип двигуна", selection: $viewModel.powertrain) {
                     ForEach(PowertrainType.allCases, id: \.self) { Text($0.rawValue).tag($0) }
                 }
@@ -53,7 +84,6 @@ struct AddCarView: View {
                     .padding(.horizontal, 40)
             }
             .padding()
-            .textFieldStyle(.roundedBorder)
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)

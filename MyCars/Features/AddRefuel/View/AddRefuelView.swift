@@ -27,9 +27,27 @@ struct AddRefuelView: View {
 
         ScrollView {
             VStack(spacing: 16) {
-                LabeledTextField(title: "Пробіг", text: $viewModel.mileage, keyboardType: .numberPad)
-                LabeledTextField(title: "Кількість палива", text: $viewModel.amount, keyboardType: .decimalPad)
-                LabeledTextField(title: "Ціна за одиницю", text: $viewModel.pricePerUnit, keyboardType: .decimalPad)
+                LabeledTextField(
+                    title: "Пробіг",
+                    text: $viewModel.mileage,
+                    keyboardType: .numberPad,
+                    unit: .kilometers,
+                    validator: TextFieldValidator.integer(field: "Пробіг")
+                )
+                LabeledTextField(
+                    title: "Кількість палива",
+                    text: $viewModel.amount,
+                    keyboardType: .decimalPad,
+                    unit: .liters,
+                    validator: TextFieldValidator.decimal(field: "Кількість палива", minimum: 0.01)
+                )
+                LabeledTextField(
+                    title: "Ціна за одиницю",
+                    text: $viewModel.pricePerUnit,
+                    keyboardType: .decimalPad,
+                    unit: .hryvniasPerLiter,
+                    validator: TextFieldValidator.decimal(field: "Ціна за одиницю", minimum: 0.01)
+                )
 
                 Toggle("Повна заправка", isOn: $viewModel.isFullCharge)
                     .padding(.vertical, 4)
@@ -42,7 +60,6 @@ struct AddRefuelView: View {
                 .padding(.horizontal, 40)
             }
             .padding()
-            .textFieldStyle(.roundedBorder)
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)

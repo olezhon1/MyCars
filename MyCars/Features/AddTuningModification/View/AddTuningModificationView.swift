@@ -28,11 +28,27 @@ struct AddTuningModificationView: View {
         ScrollView {
             VStack(spacing: 16) {
 
-                LabeledTextField(title: "Назва", text: $viewModel.name)
+                LabeledTextField(
+                    title: "Назва",
+                    text: $viewModel.name,
+                    validator: TextFieldValidator.required(field: "Назва")
+                )
 
-                LabeledTextField(title: "Вартість", text: $viewModel.price, keyboardType: .decimalPad)
+                LabeledTextField(
+                    title: "Вартість",
+                    text: $viewModel.price,
+                    keyboardType: .decimalPad,
+                    unit: .hryvnias,
+                    validator: TextFieldValidator.decimal(field: "Вартість", minimum: 0.01)
+                )
 
-                LabeledTextField(title: "Пробіг", text: $viewModel.mileage, keyboardType: .numberPad)
+                LabeledTextField(
+                    title: "Пробіг",
+                    text: $viewModel.mileage,
+                    keyboardType: .numberPad,
+                    unit: .kilometers,
+                    validator: TextFieldValidator.integer(field: "Пробіг")
+                )
 
                 DatePicker("Дата обслуговування", selection: $viewModel.date, displayedComponents: .date)
 
@@ -42,7 +58,6 @@ struct AddTuningModificationView: View {
                 .padding(.horizontal, 40)
             }
             .padding()
-            .textFieldStyle(.roundedBorder)
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)
