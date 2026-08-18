@@ -7,7 +7,7 @@
 
 import SwiftUI
 enum CarServiceType: CaseIterable, Identifiable, Hashable {
-
+    
     case fuel
     case maintenance
     case wash
@@ -16,9 +16,9 @@ enum CarServiceType: CaseIterable, Identifiable, Hashable {
     case otherExpenses
     case insurance
     case tuning
-
+    
     var id: String { title }
-
+    
     var title: String {
         switch self {
         case .fuel:
@@ -39,7 +39,7 @@ enum CarServiceType: CaseIterable, Identifiable, Hashable {
             return "Тюнінг"
         }
     }
-
+    
     var color: Color {
         switch self {
         case .fuel:          return Color("fuel_stats")
@@ -83,7 +83,21 @@ enum CarServiceType: CaseIterable, Identifiable, Hashable {
         case .tuning: return .tuning(carID: carID)
         case .tireService: return .tireService(carID: carID)
         case .repair: return .repair(carID: carID)
-        case .otherExpenses: return .otherExpense(carID: carID)
+        case .otherExpenses: return .otherExpenses(carID: carID)
         }
     }
+    
+    func route(for car: Car) -> StatsRoute {
+        switch self {
+        case .fuel: return .fuel(car: car)
+        case .maintenance: return .maintenance(car: car)
+        case .wash: return .wash(car: car)
+        case .insurance: return .insurance(car: car)
+        case .tuning: return .tuning(car: car)
+        case .tireService: return .tireService(car: car)
+        case .repair: return .repair(car: car)
+        case .otherExpenses: return .otherExpenses(car: car)
+        }
+    }
+
 }

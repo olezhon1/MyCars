@@ -14,7 +14,7 @@ enum HomeRoute: Hashable {
     case tuning(carID: UUID)
     case tireService(carID: UUID)
     case repair(carID: UUID)
-    case otherExpense(carID: UUID)
+    case otherExpenses(carID: UUID)
     case wash(carID: UUID)
     case insurance(carID: UUID)
     case unavailable(service: CarServiceType)
@@ -24,6 +24,16 @@ enum CarsRoute: Hashable {
     case addCar
 }
 
-enum StatsRoute: Hashable { case placeholder }
+enum StatsRoute: Hashable {
+    case fuel(car: Car)
+    case maintenance(car: Car)
+    case tuning(car: Car)
+    case tireService(car: Car)
+    case repair(car: Car)
+    case otherExpenses(car: Car)
+    case wash(car: Car)
+    case insurance(car: Car)
+    case unavailable(service: CarServiceType)
+}
 
 enum SettingsRoute: Hashable { case placeholder }

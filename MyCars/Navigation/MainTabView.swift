@@ -25,7 +25,8 @@ struct MainTabView: View {
         ))
         _statsViewModel = State(initialValue: StatsViewModel(
             repository: container.carRepository,
-            selection: container.carSelection
+            selection: container.carSelection,
+            onRoute: { router.push($0) }
         ))
     }
 
@@ -47,6 +48,7 @@ struct MainTabView: View {
 
             NavigationStack(path: $router.statsPath) {
                 StatsView(viewModel: statsViewModel)
+                    .navigationDestination(for: StatsRoute.self, destination: statsDestination)
             }
             .tabItem { tabLabel(for: .stats) }
             .tag(AppTab.stats)
@@ -87,7 +89,7 @@ struct MainTabView: View {
             AddTireServiceView(viewModel: AddTireServiceViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
         case .repair(let carID):
             AddRepairView(viewModel: AddRepairViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
-        case .otherExpense(let carID):
+        case .otherExpenses(let carID):
             AddOtherExpenseView(viewModel: AddOtherExpenseViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
         case .unavailable(let service):
             ContentUnavailableView(service.title, systemImage: "wrench.and.screwdriver", description: Text("Ця функція ще в розробці"))
@@ -99,6 +101,30 @@ struct MainTabView: View {
         switch route {
         case .addCar:
             AddCarView(viewModel: AddCarViewModel(repository: container.carRepository, onSaved: router.pop))
+        }
+    }
+    
+    @ViewBuilder
+    private func statsDestination(_ route: StatsRoute) -> some View {
+        switch route {
+        case .fuel(let car):
+            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .fuel))
+        case .wash(let car):
+            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .wash))
+        case .insurance(let car):
+            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .insurance))
+        case .maintenance(let car):
+            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .maintenance))
+        case .tuning(let car):
+            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .tuning))
+        case .tireService(let car):
+            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .tireService))
+        case .repair(let car):
+            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .repair))
+        case .otherExpenses(let car):
+            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .otherExpenses))
+        case .unavailable(let service):
+            ContentUnavailableView(service.title, systemImage: "wrench.and.screwdriver", description: Text("Ця функція ще в розробці"))
         }
     }
 }

@@ -46,7 +46,9 @@ struct StatsView: View {
             spacing: 12
         ) {
             ForEach(CarServiceType.allCases) { type in
-                CarServiceStatCard(type: type, value: vm.stats.valuesByService[type] ?? "0 грн")
+                CarServiceStatCard(type: type, value: vm.stats.valuesByService[type] ?? "0 грн") {
+                    viewModel.didSelect(type)
+                }
             }
         }
         .padding(.horizontal, 16)
