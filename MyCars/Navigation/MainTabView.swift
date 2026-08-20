@@ -13,6 +13,13 @@ struct MainTabView: View {
     init(router: AppRouter, container: AppContainer) {
         self.router = router
         self.container = container
+#if DEBUG
+        let createDebugCars: (() throws -> UUID?)? = {
+            try container.debugCarSeeder.seed()
+        }
+#else
+        let createDebugCars: (() throws -> UUID?)? = nil
+#endif
         _homeViewModel = State(initialValue: HomeViewModel(
             repository: container.carRepository,
             selection: container.carSelection,
@@ -21,7 +28,9 @@ struct MainTabView: View {
         _carsViewModel = State(initialValue: MyCarsViewModel(
             repository: container.carRepository,
             selection: container.carSelection,
-            onAddCar: { router.push(CarsRoute.addCar) }
+            onAddCar: { router.push(CarsRoute.addCar) },
+            onEditCar: { router.push(CarsRoute.editCar(carID: $0)) },
+            onCreateDebugCars: createDebugCars
         ))
         _statsViewModel = State(initialValue: StatsViewModel(
             repository: container.carRepository,
@@ -100,31 +109,48 @@ struct MainTabView: View {
     private func carsDestination(_ route: CarsRoute) -> some View {
         switch route {
         case .addCar:
-            AddCarView(viewModel: AddCarViewModel(repository: container.carRepository, onSaved: router.pop))
+            AddCarView(viewModel: AddCarViewModel(repository: container.carRepository, onSaved: didSaveCar))
+        case .editCar(let carID):
+            AddCarView(viewModel: AddCarViewModel(carID: carID, repository: container.carRepository, onSaved: didSaveCar))
         }
+    }
+
+    private func didSaveCar(_ carID: UUID) {
+        container.carSelection.select(carID)
+        router.pop()
     }
     
     @ViewBuilder
     private func statsDestination(_ route: StatsRoute) -> some View {
         switch route {
-        case .fuel(let car):
-            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .fuel))
-        case .wash(let car):
-            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .wash))
-        case .insurance(let car):
-            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .insurance))
-        case .maintenance(let car):
-            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .maintenance))
-        case .tuning(let car):
-            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .tuning))
-        case .tireService(let car):
-            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .tireService))
-        case .repair(let car):
-            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .repair))
-        case .otherExpenses(let car):
-            StatsDetailView(viewModel: StatsDetailViewModel(selectedCar: car, service: .otherExpenses))
+        case .fuel(let carID):
+            statsDetail(carID: carID, service: .fuel)
+        case .wash(let carID):
+            statsDetail(carID: carID, service: .wash)
+        case .insurance(let carID):
+            statsDetail(carID: carID, service: .insurance)
+        case .maintenance(let carID):
+            statsDetail(carID: carID, service: .maintenance)
+        case .tuning(let carID):
+            statsDetail(carID: carID, service: .tuning)
+        case .tireService(let carID):
+            statsDetail(carID: carID, service: .tireService)
+        case .repair(let carID):
+            statsDetail(carID: carID, service: .repair)
+        case .otherExpenses(let carID):
+            statsDetail(carID: carID, service: .otherExpenses)
         case .unavailable(let service):
             ContentUnavailableView(service.title, systemImage: "wrench.and.screwdriver", description: Text("Ця функція ще в розробці"))
         }
+    }
+
+    private func statsDetail(carID: UUID, service: CarServiceType) -> some View {
+        StatsDetailView(
+            viewModel: StatsDetailViewModel(
+                carID: carID,
+                repository: container.carRepository,
+                service: service
+            )
+        )
     }
 }

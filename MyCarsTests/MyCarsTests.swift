@@ -35,14 +35,14 @@ struct MyCarsTests {
         let container = try ModelContainer(for: schema, configurations: [configuration])
         let repository = SwiftDataRepository(context: container.mainContext)
         let car = makeCar(brand: "Dacia")
-        try repository.add(car)
+        let carID = try repository.add(data(from: car))
 
-        try repository.addWash(to: car.id, price: 300, mileage: 10_000, date: .now)
+        try repository.addWash(to: carID, price: 300, mileage: 10_000, date: .now)
 
-        let savedCar = try #require(try repository.car(id: car.id))
+        let savedCar = try #require(try repository.car(id: carID))
         #expect(savedCar.washes.count == 1)
-        #expect(savedCar.washes.first?.car?.id == car.id)
-        #expect(try repository.currentMileage(for: car.id) == 10_000)
+        #expect(savedCar.washes.first?.car?.id == carID)
+        #expect(try repository.currentMileage(for: carID) == 10_000)
     }
 
     @Test func repositoryStoresNewExpenseTypes() throws {
@@ -51,13 +51,13 @@ struct MyCarsTests {
         let container = try ModelContainer(for: schema, configurations: [configuration])
         let repository = SwiftDataRepository(context: container.mainContext)
         let car = makeCar(brand: "Dacia")
-        try repository.add(car)
+        let carID = try repository.add(data(from: car))
 
-        try repository.addRepair(to: car.id, title: "Гальма", price: 2_000, mileage: 12_000, date: .now, notes: nil)
-        try repository.addTireService(to: car.id, title: "Балансування", price: 500, mileage: 12_100, date: .now, notes: nil)
-        try repository.addOtherExpense(to: car.id, title: "Паркування", price: 100, mileage: nil, date: .now, notes: nil)
+        try repository.addRepair(to: carID, title: "Гальма", price: 2_000, mileage: 12_000, date: .now, notes: nil)
+        try repository.addTireService(to: carID, title: "Балансування", price: 500, mileage: 12_100, date: .now, notes: nil)
+        try repository.addOtherExpense(to: carID, title: "Паркування", price: 100, mileage: nil, date: .now, notes: nil)
 
-        let savedCar = try #require(try repository.car(id: car.id))
+        let savedCar = try #require(try repository.car(id: carID))
         #expect(savedCar.maintenanceHistory.first?.type == .repair)
         #expect(savedCar.tireServices.count == 1)
         #expect(savedCar.otherExpenses.first?.mileage == nil)
@@ -66,7 +66,7 @@ struct MyCarsTests {
     @Test func addCarViewModelDoesNotCloseOnInvalidInput() {
         let repository = CarRepositorySpy()
         var didClose = false
-        let viewModel = AddCarViewModel(repository: repository) { didClose = true }
+        let viewModel = AddCarViewModel(repository: repository) { _ in didClose = true }
 
         viewModel.save()
 
@@ -83,8 +83,8 @@ struct MyCarsTests {
             Maintenance(title: "ТО 2", price: 1_500, mileage: 32_000)
         ]
 
-        #expect(car.estimatedMaintenanceInterval == 11_000)
-        #expect(car.kilometersUntilMaintenance == 11_000)
+        #expect(car.estimatedMaintenanceInterval == 22_000)
+        #expect(car.kilometersUntilMaintenance == 22_000)
     }
 
     @Test func maintenanceIntervalRequiresTwoRecords() {
@@ -98,7 +98,20 @@ struct MyCarsTests {
     }
 
     private func makeCar(brand: String) -> Car {
-        Car(brand: brand, model: "Model", year: 2020, purchasePrice: 10_000, purchaseMileage: 1_000, purchaseDate: .now, powertrain: .petrol, energyCapacity: 50)
+        Car(brand: brand, model: "Model", year: 2020, purchasePrice: 10_000, purchaseMileage: 1_000, purchaseDate: .now, energyCapacity: 50)
+    }
+
+    private func data(from car: Car) -> CarData {
+        CarData(
+            brand: car.brand,
+            model: car.model,
+            year: car.year,
+            purchasePrice: car.purchasePrice,
+            purchaseMileage: car.purchaseMileage,
+            purchaseDate: car.purchaseDate,
+            energyCapacity: car.energyCapacity,
+            imageData: car.imageData
+        )
     }
 }
 
@@ -107,5 +120,13 @@ private final class CarRepositorySpy: CarRepository {
     var addedCars: [Car] = []
     func fetchCars() throws -> [Car] { addedCars }
     func car(id: UUID) throws -> Car? { addedCars.first { $0.id == id } }
-    func add(_ car: Car) throws { addedCars.append(car) }
+    func add(_ data: CarData) throws -> UUID {
+        let car = Car(data: data)
+        addedCars.append(car)
+        return car.id
+    }
+    func update(carID: UUID, with data: CarData) throws {
+        addedCars.first { $0.id == carID }?.update(with: data)
+    }
+    func delete(carID: UUID) throws { addedCars.removeAll { $0.id == carID } }
 }

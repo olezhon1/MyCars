@@ -40,6 +40,7 @@ struct LabeledTextField: View {
 
             AppTextField(
                 placeholder: placeholder,
+                accessibilityLabel: title,
                 text: $text,
                 keyboardType: keyboardType,
                 unit: unit,

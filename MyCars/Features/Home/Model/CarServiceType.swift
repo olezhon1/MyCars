@@ -87,16 +87,16 @@ enum CarServiceType: CaseIterable, Identifiable, Hashable {
         }
     }
     
-    func route(for car: Car) -> StatsRoute {
+    func statsRoute(for carID: UUID) -> StatsRoute {
         switch self {
-        case .fuel: return .fuel(car: car)
-        case .maintenance: return .maintenance(car: car)
-        case .wash: return .wash(car: car)
-        case .insurance: return .insurance(car: car)
-        case .tuning: return .tuning(car: car)
-        case .tireService: return .tireService(car: car)
-        case .repair: return .repair(car: car)
-        case .otherExpenses: return .otherExpenses(car: car)
+        case .fuel: return .fuel(carID: carID)
+        case .maintenance: return .maintenance(carID: carID)
+        case .wash: return .wash(carID: carID)
+        case .insurance: return .insurance(carID: carID)
+        case .tuning: return .tuning(carID: carID)
+        case .tireService: return .tireService(carID: carID)
+        case .repair: return .repair(carID: carID)
+        case .otherExpenses: return .otherExpenses(carID: carID)
         }
     }
 

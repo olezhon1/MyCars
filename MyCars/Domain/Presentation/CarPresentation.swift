@@ -17,8 +17,9 @@ struct StatsPresentation: Equatable {
     let totalExpenses: String
     let costPerKilometer: String
     let valuesByService: [CarServiceType: String]
+    let hasData: Bool
 
-    static let empty = StatsPresentation(totalExpenses: "0 грн", costPerKilometer: "0 грн / км", valuesByService: [:])
+    static let empty = StatsPresentation(totalExpenses: "0 грн", costPerKilometer: "0 грн / км", valuesByService: [:], hasData: false)
 }
 
 struct ExpensePoint: Identifiable {
@@ -56,7 +57,9 @@ enum PresentationMapper {
             currentMileage: "\(car.currentMileage.formatted()) км",
             maintenanceStatus: maintenanceStatus(for: car),
             totalExpenses: total.formatted(.currency(code: "UAH")),
-            averageConsumption: averageConsumption(for: car).map { "\($0.formatted(.number.precision(.fractionLength(1)))) л" } ?? "—",
+            averageConsumption: averageConsumption(for: car).map {
+                "\($0.formatted(.number.precision(.fractionLength(1)))) л/100 км"
+            } ?? "—",
             imageData: car.imageData,
             insuranceEndDate: car.latestInsurance?.endDate
         )
@@ -88,12 +91,13 @@ enum PresentationMapper {
                 .tuning: tuning.formatted(.currency(code: "UAH")),
                 .tireService: tireServices.formatted(.currency(code: "UAH")),
                 .otherExpenses: otherExpenses.formatted(.currency(code: "UAH"))
-            ]
+            ],
+            hasData: total > 0
         )
     }
     
     static func expensesForService(for car: Car?, period: StatsPeriod, service: CarServiceType) -> [ExpensePoint] {
-        guard let car else { return [.empty]}
+        guard let car else { return [] }
         let startDate = period.startDate
 
         switch service {
@@ -303,7 +307,7 @@ enum PresentationMapper {
         let amount = refills.dropFirst().reduce(0) { $0 + $1.amount }
         return amount / Double(last.mileage - first.mileage) * 100
     }
-    
+
     private static func monthlyExpenses<T>(
         from records: [T],
         startDate: Date,

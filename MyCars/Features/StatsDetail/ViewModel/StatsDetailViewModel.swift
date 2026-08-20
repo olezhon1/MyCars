@@ -11,7 +11,8 @@ import Observation
 @MainActor
 @Observable
 final class StatsDetailViewModel {
-    private let selectedCar: Car?
+    private let carID: UUID
+    private let repository: any CarRepository
     private let service: CarServiceType
 
     var selectedPeriod: StatsPeriod = .halfYear {
@@ -20,26 +21,39 @@ final class StatsDetailViewModel {
         }
     }
 
-    private(set) var expenses: [ExpensePoint] = [.empty]
+    private(set) var expenses: [ExpensePoint] = []
     private(set) var expenseSections: [ExpenseMonthSection] = []
     private(set) var selectedMonth: Date?
+    private(set) var errorMessage: String?
 
-    init(selectedCar: Car?, service: CarServiceType) {
-        self.selectedCar = selectedCar
+    init(carID: UUID, repository: any CarRepository, service: CarServiceType) {
+        self.carID = carID
+        self.repository = repository
         self.service = service
     }
 
+    var hasData: Bool { !expenseSections.isEmpty }
+    var serviceTitle: String { service.title }
+
     func load() {
-        expenses = PresentationMapper.expensesForService(
-            for: selectedCar,
-            period: selectedPeriod,
-            service: service
-        )
-        expenseSections = PresentationMapper.expenseHistory(
-            for: selectedCar,
-            period: selectedPeriod,
-            service: service
-        )
+        do {
+            let selectedCar = try repository.car(id: carID)
+            expenses = PresentationMapper.expensesForService(
+                for: selectedCar,
+                period: selectedPeriod,
+                service: service
+            )
+            expenseSections = PresentationMapper.expenseHistory(
+                for: selectedCar,
+                period: selectedPeriod,
+                service: service
+            )
+            errorMessage = nil
+        } catch {
+            expenses = []
+            expenseSections = []
+            errorMessage = error.localizedDescription
+        }
 
         let calendar = Calendar.current
         selectedMonth = expenses.first {
@@ -50,4 +64,6 @@ final class StatsDetailViewModel {
     func selectMonth(_ month: Date) {
         selectedMonth = month
     }
+
+    func dismissError() { errorMessage = nil }
 }

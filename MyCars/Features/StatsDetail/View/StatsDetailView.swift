@@ -16,18 +16,32 @@ struct StatsDetailView: View {
     var body: some View {
         content()
             .onAppear { viewModel.load() }
+            .alert("Не вдалося завантажити статистику", isPresented: errorPresented) {
+                Button("OK") { viewModel.dismissError() }
+            } message: {
+                Text(viewModel.errorMessage ?? "Невідома помилка")
+            }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        displayMode.toggle()
-                    } label: {
-                        Image(displayMode.toggleImageName)
-                            .renderingMode(.template)
-                            .foregroundStyle(Color("primary"))
+                if viewModel.hasData {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            displayMode.toggle()
+                        } label: {
+                            Image(displayMode.toggleImageName)
+                                .renderingMode(.template)
+                                .foregroundStyle(Color("primary"))
+                        }
+                        .accessibilityLabel(displayMode.toggleAccessibilityLabel)
                     }
-                    .accessibilityLabel(displayMode.toggleAccessibilityLabel)
                 }
             }
+    }
+
+    private var errorPresented: Binding<Bool> {
+        Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.dismissError() } }
+        )
     }
     
     @ViewBuilder
@@ -36,15 +50,22 @@ struct StatsDetailView: View {
         ScrollView {
             periodPicker(vm: viewModel, periods: [.halfYear, .year, .allTime])
 
-            if displayMode == .chart {
-                amountChart(expenses: viewModel.expenses)
-            }
+            if viewModel.hasData {
+                if displayMode == .chart {
+                    amountChart(expenses: viewModel.expenses)
+                }
 
-            expenseHistory(sections: visibleExpenseSections)
+                expenseHistory(sections: visibleExpenseSections)
+            } else {
+                StatisticsEmptyState(serviceTitle: viewModel.serviceTitle)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 48)
+                    .padding(.horizontal, 24)
+            }
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Cтатитсика".uppercased())
+        .navigationTitle("Статистика".uppercased())
     }
     
     @ViewBuilder

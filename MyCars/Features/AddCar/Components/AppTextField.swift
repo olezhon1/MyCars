@@ -20,6 +20,7 @@ struct AppTextField: View {
     typealias Validator = (String) -> String?
 
     var placeholder: String = ""
+    var accessibilityLabel: String?
     @Binding var text: String
     var keyboardType: UIKeyboardType = .default
     var unit: MeasurementUnit?
@@ -51,6 +52,7 @@ struct AppTextField: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 8) {
                 TextField(placeholder, text: $text)
+                    .accessibilityLabel(accessibilityLabel ?? placeholder)
                     .focused($isFocused)
                     .font(.system(size: 15))
                     .keyboardType(keyboardType)

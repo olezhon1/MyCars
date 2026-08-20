@@ -14,6 +14,7 @@ final class StatsViewModel {
     
     private var selectedCar: Car?
     private(set) var stats: StatsPresentation = .empty
+    private(set) var hasSelectedCar = false
     private(set) var errorMessage: String?
 
     init(repository: any CarRepository, selection: CarSelectionStore, onRoute: @escaping (StatsRoute) -> Void) {
@@ -27,9 +28,16 @@ final class StatsViewModel {
             let cars = try repository.fetchCars()
             selection.reconcile(with: cars)
             selectedCar = cars.first { $0.id == selection.selectedCarID }
+            hasSelectedCar = selectedCar != nil
             stats = PresentationMapper.stats(for: selectedCar, period: selectedPeriod)
             errorMessage = nil
         } catch { errorMessage = error.localizedDescription }
+    }
+
+    var emptyStateMessage: String {
+        hasSelectedCar
+            ? "Додайте першу витрату для активного автомобіля — аналітика з’явиться тут автоматично."
+            : "Спочатку додайте автомобіль у розділі «Мої авто»."
     }
     
     func didSelect(_ type: CarServiceType) {
@@ -37,6 +45,6 @@ final class StatsViewModel {
             errorMessage = "Спочатку додайте автомобіль."
             return
         }
-        onRoute(type.route(for: selectedCar))
+        onRoute(type.statsRoute(for: selectedCar.id))
     }
 }

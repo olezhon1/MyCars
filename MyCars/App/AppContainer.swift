@@ -6,6 +6,9 @@ final class AppContainer {
     let carRepository: any CarRepository
     let expenseRepository: any ExpenseRepository
     let carSelection: CarSelectionStore
+#if DEBUG
+    let debugCarSeeder: DebugCarSeeder
+#endif
 
     // REVIEW: Composition root. Concrete SwiftData dependencies are created only here.
     init(modelContext: ModelContext, defaults: UserDefaults = .standard) {
@@ -13,5 +16,8 @@ final class AppContainer {
         carRepository = repository
         expenseRepository = repository
         carSelection = CarSelectionStore(defaults: defaults)
+#if DEBUG
+        debugCarSeeder = DebugCarSeeder(repository: repository)
+#endif
     }
 }

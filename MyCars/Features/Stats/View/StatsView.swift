@@ -22,18 +22,25 @@ struct StatsView: View {
         ScrollView {
             periodPicker(vm: viewModel)
 
-            HStack(alignment: .center, spacing: 20) {
-                StatView(title: "Всього витрачено", value: viewModel.stats.totalExpenses, style: .horizontal)
-                StatView(title: "На кілометр", value: viewModel.stats.costPerKilometer, style: .horizontal)
+            if viewModel.stats.hasData {
+                HStack(alignment: .center, spacing: 20) {
+                    StatView(title: "Всього витрачено", value: viewModel.stats.totalExpenses, style: .horizontal)
+                    StatView(title: "На кілометр", value: viewModel.stats.costPerKilometer, style: .horizontal)
+                }
+                .padding(.bottom, 24)
+                .padding(.horizontal, 20)
+
+                carsServiceSection(vm: viewModel)
+            } else {
+                StatisticsEmptyState(message: viewModel.emptyStateMessage)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 48)
+                    .padding(.horizontal, 24)
             }
-            .padding(.bottom, 24)
-            .padding(.horizontal, 20)
-            
-            carsServiceSection(vm: viewModel)
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Cтатитсика".uppercased())
+        .navigationTitle("Статистика".uppercased())
     }
     
     @ViewBuilder

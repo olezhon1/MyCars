@@ -5,7 +5,9 @@ import SwiftData
 protocol CarRepository {
     func fetchCars() throws -> [Car]
     func car(id: UUID) throws -> Car?
-    func add(_ car: Car) throws
+    func add(_ data: CarData) throws -> UUID
+    func update(carID: UUID, with data: CarData) throws
+    func delete(carID: UUID) throws
 }
 
 @MainActor
@@ -50,8 +52,22 @@ final class SwiftDataRepository: CarRepository, ExpenseRepository {
         return try context.fetch(descriptor).first
     }
 
-    func add(_ car: Car) throws {
+    func add(_ data: CarData) throws -> UUID {
+        let car = Car(data: data)
         context.insert(car)
+        try context.save()
+        return car.id
+    }
+
+    func update(carID: UUID, with data: CarData) throws {
+        let car = try requiredCar(id: carID)
+        car.update(with: data)
+        try context.save()
+    }
+
+    func delete(carID: UUID) throws {
+        let car = try requiredCar(id: carID)
+        context.delete(car)
         try context.save()
     }
 

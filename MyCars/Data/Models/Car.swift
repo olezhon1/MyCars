@@ -17,7 +17,6 @@ class Car {
     var purchasePrice: Double
     var purchaseMileage: Int
     var purchaseDate: Date
-    var powertrainRaw: String
     var energyCapacity: Double
     
     @Attribute(.externalStorage) var imageData: Data?
@@ -41,6 +40,7 @@ class Car {
 
     var estimatedMaintenanceInterval: Int? {
         let mileages = maintenanceHistory
+            .filter { $0.type == .scheduled }
             .map(\.mileage)
             .sorted()
 
@@ -57,7 +57,10 @@ class Car {
     var kilometersUntilMaintenance: Int? {
         guard
             let interval = estimatedMaintenanceInterval,
-            let lastMaintenanceMileage = maintenanceHistory.map(\.mileage).max()
+            let lastMaintenanceMileage = maintenanceHistory
+                .filter({ $0.type == .scheduled })
+                .map(\.mileage)
+                .max()
         else { return nil }
 
         return lastMaintenanceMileage + interval - currentMileage
@@ -88,7 +91,7 @@ class Car {
         insurances.max { $0.endDate < $1.endDate }
     }
     
-    init(brand: String, model: String, year: Int, purchasePrice: Double, purchaseMileage: Int, purchaseDate: Date, powertrain: PowertrainType, energyCapacity: Double, imageData: Data? = nil) {
+    init(brand: String, model: String, year: Int, purchasePrice: Double, purchaseMileage: Int, purchaseDate: Date, energyCapacity: Double, imageData: Data? = nil) {
         self.id = UUID()
         self.brand = brand
         self.model = model
@@ -96,17 +99,31 @@ class Car {
         self.purchasePrice = purchasePrice
         self.purchaseMileage = purchaseMileage
         self.purchaseDate = purchaseDate
-        self.powertrainRaw = powertrain.rawValue
         self.energyCapacity = energyCapacity
         self.imageData = imageData
     }
-}
 
-enum PowertrainType: String, CaseIterable, Codable {
-    case petrol = "Бензин"
-    case diesel = "Дизель"
-    case electric = "Електро"
-    case hybrid = "Гібрид"
-    case lpg = "Газ (Пропан-Бутан)"
-    case cng = "Газ (Метан)"
+    convenience init(data: CarData) {
+        self.init(
+            brand: data.brand,
+            model: data.model,
+            year: data.year,
+            purchasePrice: data.purchasePrice,
+            purchaseMileage: data.purchaseMileage,
+            purchaseDate: data.purchaseDate,
+            energyCapacity: data.energyCapacity,
+            imageData: data.imageData
+        )
+    }
+
+    func update(with data: CarData) {
+        brand = data.brand
+        model = data.model
+        year = data.year
+        purchasePrice = data.purchasePrice
+        purchaseMileage = data.purchaseMileage
+        purchaseDate = data.purchaseDate
+        energyCapacity = data.energyCapacity
+        imageData = data.imageData
+    }
 }

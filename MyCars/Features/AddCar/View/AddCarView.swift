@@ -72,13 +72,10 @@ struct AddCarView: View {
                     unit: .liters,
                     validator: TextFieldValidator.decimal(field: "Об’єм / ємність")
                 )
-                Picker("Тип двигуна", selection: $viewModel.powertrain) {
-                    ForEach(PowertrainType.allCases, id: \.self) { Text($0.rawValue).tag($0) }
-                }
                 
                 DatePicker("Дата купівлі", selection: $viewModel.purchaseDate, displayedComponents: .date)
                 
-                CustomButton(title: "Зберегти") {
+                CustomButton(title: viewModel.saveButtonTitle) {
                     viewModel.save()
                 }
                     .padding(.horizontal, 40)
@@ -87,7 +84,7 @@ struct AddCarView: View {
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Нове авто".uppercased())
+        .navigationTitle(viewModel.navigationTitle.uppercased())
     }
     
 }
