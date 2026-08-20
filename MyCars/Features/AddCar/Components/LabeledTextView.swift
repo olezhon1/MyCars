@@ -15,13 +15,13 @@ struct LabeledTextView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(title)
+            Text(L10n.text(title))
                 .font(Font.system(size: 14, weight: .regular))
                 .foregroundColor(Color("primary"))
 
             ZStack(alignment: .topLeading) {
                 if text.isEmpty {
-                    Text(placeholder)
+                    Text(L10n.text(placeholder))
                         .font(.system(size: 16))
                         .foregroundColor(Color(.placeholderText))
                         .padding(.horizontal, 8)

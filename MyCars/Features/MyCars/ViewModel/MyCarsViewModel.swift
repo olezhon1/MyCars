@@ -8,6 +8,7 @@ final class MyCarsViewModel {
     private let selection: CarSelectionStore
     private let onAddCar: () -> Void
     private let onEditCar: (UUID) -> Void
+    private let onDataChanged: () -> Void
     private let onCreateDebugCars: (() throws -> UUID?)?
 
     private let selectedPeriod: StatsPeriod = .allTime
@@ -27,12 +28,14 @@ final class MyCarsViewModel {
         selection: CarSelectionStore,
         onAddCar: @escaping () -> Void,
         onEditCar: @escaping (UUID) -> Void,
+        onDataChanged: @escaping () -> Void = {},
         onCreateDebugCars: (() throws -> UUID?)? = nil
     ) {
         self.repository = repository
         self.selection = selection
         self.onAddCar = onAddCar
         self.onEditCar = onEditCar
+        self.onDataChanged = onDataChanged
         self.onCreateDebugCars = onCreateDebugCars
     }
 
@@ -59,6 +62,7 @@ final class MyCarsViewModel {
         do {
             try repository.delete(carID: carID)
             load()
+            onDataChanged()
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -74,7 +78,8 @@ final class MyCarsViewModel {
                 selection.select(activeCarID)
             }
             load()
-            debugMessage = "10 тестових автомобілів готові. Повторне натискання відновить лише видалені сценарії."
+            onDataChanged()
+            debugMessage = L10n.text("debug.cars.created")
         } catch {
             errorMessage = error.localizedDescription
         }

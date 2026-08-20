@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StatisticsEmptyState: View {
     var serviceTitle: String?
-    var message = "Додайте першу витрату для активного автомобіля — аналітика з’явиться тут автоматично."
+    var message = L10n.text("statistics.empty.description")
 
     var body: some View {
         ContentUnavailableView(
@@ -13,6 +13,7 @@ struct StatisticsEmptyState: View {
     }
 
     private var title: String {
-        serviceTitle.map { "Ще немає даних: \($0)" } ?? "Ще немає даних для статистики"
+        serviceTitle.map { L10n.text("statistics.empty.service", $0) }
+            ?? L10n.text("statistics.empty.title")
     }
 }

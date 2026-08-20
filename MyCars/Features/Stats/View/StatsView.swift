@@ -24,8 +24,8 @@ struct StatsView: View {
 
             if viewModel.stats.hasData {
                 HStack(alignment: .center, spacing: 20) {
-                    StatView(title: "Всього витрачено", value: viewModel.stats.totalExpenses, style: .horizontal)
-                    StatView(title: "На кілометр", value: viewModel.stats.costPerKilometer, style: .horizontal)
+                    StatView(title: "statistics.totalSpent", value: viewModel.stats.totalExpenses, style: .horizontal)
+                    StatView(title: "statistics.perKilometer", value: viewModel.stats.costPerKilometer, style: .horizontal)
                 }
                 .padding(.bottom, 24)
                 .padding(.horizontal, 20)
@@ -40,7 +40,7 @@ struct StatsView: View {
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Статистика".uppercased())
+        .navigationTitle(L10n.text("tab.statistics").uppercased())
     }
     
     @ViewBuilder
@@ -53,7 +53,7 @@ struct StatsView: View {
             spacing: 12
         ) {
             ForEach(CarServiceType.allCases) { type in
-                CarServiceStatCard(type: type, value: vm.stats.valuesByService[type] ?? "0 грн") {
+                CarServiceStatCard(type: type, value: vm.stats.valuesByService[type] ?? L10n.currency(0)) {
                     viewModel.didSelect(type)
                 }
             }

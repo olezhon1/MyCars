@@ -11,10 +11,10 @@ struct AddCarWashView: View {
     @Bindable var viewModel: AddCarWashViewModel
     var body: some View {
         content()
-            .alert("Не вдалося зберегти", isPresented: errorPresented) {
-                Button("OK") { viewModel.dismissError() }
+            .alert("common.error.save", isPresented: errorPresented) {
+                Button("common.ok") { viewModel.dismissError() }
             } message: {
-                Text(viewModel.errorMessage ?? "Невідома помилка")
+                Text(viewModel.errorMessage ?? L10n.text("common.unknownError"))
             }
     }
 
@@ -28,23 +28,23 @@ struct AddCarWashView: View {
         ScrollView {
             VStack(spacing: 16) {
                 LabeledTextField(
-                    title: "Пробіг",
+                    title: "car.field.mileage",
                     text: $viewModel.mileage,
                     keyboardType: .numberPad,
                     unit: .kilometers,
-                    validator: TextFieldValidator.optionalInteger(field: "Пробіг")
+                    validator: TextFieldValidator.optionalInteger(field: "car.field.mileage")
                 )
                 LabeledTextField(
-                    title: "Вартість мийки",
+                    title: "carWash.field.cost",
                     text: $viewModel.price,
                     keyboardType: .decimalPad,
                     unit: .hryvnias,
-                    validator: TextFieldValidator.decimal(field: "Вартість", minimum: 0.01)
+                    validator: TextFieldValidator.decimal(field: "common.cost", minimum: 0.01)
                 )
 
-                DatePicker("Дата мийки", selection: $viewModel.date, displayedComponents: .date)
+                DatePicker("carWash.field.date", selection: $viewModel.date, displayedComponents: .date)
 
-                CustomButton(title: "Зберегти") {
+                CustomButton(title: "common.save") {
                     viewModel.save()
                 }
                 .padding(.horizontal, 40)
@@ -53,6 +53,6 @@ struct AddCarWashView: View {
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Автомийка".uppercased())
+        .navigationTitle(L10n.text("carWash.add.title").uppercased())
     }
 }

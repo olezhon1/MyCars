@@ -4,6 +4,7 @@ import SwiftData
 @main
 @MainActor
 struct MyCarsApp: App {
+    @Environment(\.scenePhase) private var scenePhase
     private let modelContainer: ModelContainer
     private let container: AppContainer
     @State private var router: AppRouter
@@ -32,5 +33,9 @@ struct MyCarsApp: App {
             MainTabView(router: router, container: container)
         }
         .modelContainer(modelContainer)
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active else { return }
+            Task { try? await container.reminderService.synchronize() }
+        }
     }
 }

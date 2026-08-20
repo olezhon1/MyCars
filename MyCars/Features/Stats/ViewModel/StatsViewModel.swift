@@ -36,13 +36,13 @@ final class StatsViewModel {
 
     var emptyStateMessage: String {
         hasSelectedCar
-            ? "Додайте першу витрату для активного автомобіля — аналітика з’явиться тут автоматично."
-            : "Спочатку додайте автомобіль у розділі «Мої авто»."
+            ? L10n.text("statistics.empty.description")
+            : L10n.text("statistics.empty.noCar")
     }
     
     func didSelect(_ type: CarServiceType) {
         guard let selectedCar else {
-            errorMessage = "Спочатку додайте автомобіль."
+            errorMessage = L10n.text("car.required")
             return
         }
         onRoute(type.statsRoute(for: selectedCar.id))

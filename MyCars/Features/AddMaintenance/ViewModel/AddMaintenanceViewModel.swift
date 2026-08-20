@@ -30,9 +30,9 @@ final class AddMaintenanceViewModel {
             let currentMileage = try repository.currentMileage(for: carID)
             try repository.addMaintenance(
                 to: carID,
-                title: try FormValidation.required(title, field: "Назва"),
-                price: try FormValidation.decimal(price, field: "Вартість", minimum: 0.01),
-                mileage: try FormValidation.integer(mileage, field: "Пробіг", minimum: currentMileage),
+                title: try FormValidation.required(title, field: "common.title"),
+                price: try FormValidation.decimal(price, field: "common.cost", minimum: 0.01),
+                mileage: try FormValidation.integer(mileage, field: "car.field.mileage", minimum: currentMileage),
                 date: date,
                 notes: notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : notes
             )

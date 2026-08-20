@@ -22,21 +22,21 @@ enum CarServiceType: CaseIterable, Identifiable, Hashable {
     var title: String {
         switch self {
         case .fuel:
-            return "Заправка"
+            return L10n.text("expense.type.refuel")
         case .maintenance:
-            return "ТО"
+            return L10n.text("expense.type.maintenance")
         case .wash:
-            return "Мийка"
+            return L10n.text("expense.type.carWash")
         case .tireService:
-            return "Шиномонтаж"
+            return L10n.text("expense.type.tireService")
         case .repair:
-            return "Ремонт"
+            return L10n.text("expense.type.repair")
         case .otherExpenses:
-            return "Інші витрати"
+            return L10n.text("expense.type.other")
         case .insurance:
-            return "Страхування"
+            return L10n.text("expense.type.insurance")
         case .tuning:
-            return "Тюнінг"
+            return L10n.text("expense.type.tuning")
         }
     }
     

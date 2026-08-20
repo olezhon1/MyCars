@@ -35,7 +35,7 @@ final class HomeViewModel {
 
     func didSelect(_ type: CarServiceType) {
         guard let selectedCarID else {
-            errorMessage = "Спочатку додайте автомобіль."
+            errorMessage = L10n.text("car.required")
             return
         }
         onRoute(type.route(for: selectedCarID))

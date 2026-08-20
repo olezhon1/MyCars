@@ -35,7 +35,7 @@ struct HomeView: View {
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Головна")
+        .navigationTitle("tab.home")
     }
 
     // MARK: - Sections

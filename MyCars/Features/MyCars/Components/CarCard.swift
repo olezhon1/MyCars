@@ -18,10 +18,10 @@ struct CarCard: View {
             HStack(spacing: 16) {
                 carImage
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 24) {
-                    StatView(title: "Пробіг при купівлі", value: car.purchaseMileage, style: .vertical)
-                    StatView(title: "Середній розхід", value: car.averageConsumption, style: .vertical)
-                    StatView(title: "Пробіг зараз", value: car.currentMileage, style: .vertical)
-                    StatView(title: "Вкладено", value: car.totalExpenses, style: .vertical)
+                    StatView(title: "car.purchaseMileage", value: car.purchaseMileage, style: .vertical)
+                    StatView(title: "statistics.averageConsumption", value: car.averageConsumption, style: .vertical)
+                    StatView(title: "car.currentMileage", value: car.currentMileage, style: .vertical)
+                    StatView(title: "car.invested", value: car.totalExpenses, style: .vertical)
                 }
             }
 
@@ -48,7 +48,7 @@ struct CarCard: View {
             actionButton(
                 systemImage: "slider.horizontal.3",
                 color: Color("primary"),
-                accessibilityLabel: "Редагувати автомобіль",
+                accessibilityLabel: L10n.text("cars.edit.action"),
                 accessibilityIdentifier: "edit-car-\(car.id.uuidString)",
                 action: onEdit
             )
@@ -56,7 +56,7 @@ struct CarCard: View {
             actionButton(
                 systemImage: "trash",
                 color: .red,
-                accessibilityLabel: "Видалити автомобіль",
+                accessibilityLabel: L10n.text("cars.delete.action"),
                 accessibilityIdentifier: "delete-car-\(car.id.uuidString)",
                 action: onDelete
             )

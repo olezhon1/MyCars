@@ -26,8 +26,8 @@ final class AddCarWashViewModel {
     func save() {
         do {
             let currentMileage = try repository.currentMileage(for: carID)
-            let parsedMileage = mileage.isEmpty ? nil : try FormValidation.integer(mileage, field: "Пробіг", minimum: currentMileage)
-            try repository.addWash(to: carID, price: try FormValidation.decimal(price, field: "Вартість", minimum: 0.01), mileage: parsedMileage, date: date)
+            let parsedMileage = mileage.isEmpty ? nil : try FormValidation.integer(mileage, field: "car.field.mileage", minimum: currentMileage)
+            try repository.addWash(to: carID, price: try FormValidation.decimal(price, field: "common.cost", minimum: 0.01), mileage: parsedMileage, date: date)
             onSaved()
         } catch { errorMessage = error.localizedDescription }
     }

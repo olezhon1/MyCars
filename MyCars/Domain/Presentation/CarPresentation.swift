@@ -19,7 +19,14 @@ struct StatsPresentation: Equatable {
     let valuesByService: [CarServiceType: String]
     let hasData: Bool
 
-    static let empty = StatsPresentation(totalExpenses: "0 грн", costPerKilometer: "0 грн / км", valuesByService: [:], hasData: false)
+    static var empty: StatsPresentation {
+        StatsPresentation(
+            totalExpenses: L10n.currency(0),
+            costPerKilometer: "\(L10n.currency(0)) / \(L10n.text("unit.kilometers"))",
+            valuesByService: [:],
+            hasData: false
+        )
+    }
 }
 
 struct ExpensePoint: Identifiable {
@@ -52,13 +59,13 @@ enum PresentationMapper {
         return CarPresentation(
             id: car.id,
             title: "\(car.brand) \(car.model) — \(car.year)",
-            purchasePrice: car.purchasePrice.formatted(.currency(code: "UAH")),
-            purchaseMileage: "\(car.purchaseMileage.formatted()) км",
-            currentMileage: "\(car.currentMileage.formatted()) км",
+            purchasePrice: L10n.currency(car.purchasePrice),
+            purchaseMileage: "\(L10n.integer(car.purchaseMileage)) \(L10n.text("unit.kilometers"))",
+            currentMileage: "\(L10n.integer(car.currentMileage)) \(L10n.text("unit.kilometers"))",
             maintenanceStatus: maintenanceStatus(for: car),
-            totalExpenses: total.formatted(.currency(code: "UAH")),
+            totalExpenses: L10n.currency(total),
             averageConsumption: averageConsumption(for: car).map {
-                "\($0.formatted(.number.precision(.fractionLength(1)))) л/100 км"
+                "\($0.formatted(.number.precision(.fractionLength(1)).locale(L10n.locale))) \(L10n.text("unit.litersPer100Kilometers"))"
             } ?? "—",
             imageData: car.imageData,
             insuranceEndDate: car.latestInsurance?.endDate
@@ -80,17 +87,17 @@ enum PresentationMapper {
         let kilometers = max(car.totalDrivenKilometers, 0)
         let perKilometer = kilometers > 0 ? total / Double(kilometers) : 0
         return StatsPresentation(
-            totalExpenses: total.formatted(.currency(code: "UAH")),
-            costPerKilometer: "\(perKilometer.formatted(.currency(code: "UAH"))) / км",
+            totalExpenses: L10n.currency(total),
+            costPerKilometer: "\(L10n.currency(perKilometer)) / \(L10n.text("unit.kilometers"))",
             valuesByService: [
-                .fuel: fuel.formatted(.currency(code: "UAH")),
-                .maintenance: maintenance.formatted(.currency(code: "UAH")),
-                .repair: repairs.formatted(.currency(code: "UAH")),
-                .wash: washes.formatted(.currency(code: "UAH")),
-                .insurance: insurance.formatted(.currency(code: "UAH")),
-                .tuning: tuning.formatted(.currency(code: "UAH")),
-                .tireService: tireServices.formatted(.currency(code: "UAH")),
-                .otherExpenses: otherExpenses.formatted(.currency(code: "UAH"))
+                .fuel: L10n.currency(fuel),
+                .maintenance: L10n.currency(maintenance),
+                .repair: L10n.currency(repairs),
+                .wash: L10n.currency(washes),
+                .insurance: L10n.currency(insurance),
+                .tuning: L10n.currency(tuning),
+                .tireService: L10n.currency(tireServices),
+                .otherExpenses: L10n.currency(otherExpenses)
             ],
             hasData: total > 0
         )
@@ -179,7 +186,7 @@ enum PresentationMapper {
                     amount: $0.totalPrice,
                     mileage: $0.mileage,
                     date: $0.date,
-                    dateTitle: "Дата заправки"
+                    dateTitle: L10n.text("refuel.field.date")
                 )
             }
         case .maintenance:
@@ -190,7 +197,7 @@ enum PresentationMapper {
                     amount: $0.price,
                     mileage: $0.mileage,
                     date: $0.date,
-                    dateTitle: "Дата ТО"
+                    dateTitle: L10n.text("history.date.maintenance")
                 )
             }
         case .repair:
@@ -201,7 +208,7 @@ enum PresentationMapper {
                     amount: $0.price,
                     mileage: $0.mileage,
                     date: $0.date,
-                    dateTitle: "Дата ремонту"
+                    dateTitle: L10n.text("repair.field.date")
                 )
             }
         case .wash:
@@ -212,7 +219,7 @@ enum PresentationMapper {
                     amount: $0.price,
                     mileage: $0.mileage,
                     date: $0.date,
-                    dateTitle: "Дата мийки"
+                    dateTitle: L10n.text("carWash.field.date")
                 )
             }
         case .insurance:
@@ -223,7 +230,7 @@ enum PresentationMapper {
                     amount: $0.price,
                     mileage: nil,
                     date: $0.startDate,
-                    dateTitle: "Дата страхування"
+                    dateTitle: L10n.text("history.date.insurance")
                 )
             }
         case .tuning:
@@ -234,7 +241,7 @@ enum PresentationMapper {
                     amount: $0.price,
                     mileage: $0.mileage,
                     date: $0.date,
-                    dateTitle: "Дата тюнінгу"
+                    dateTitle: L10n.text("history.date.tuning")
                 )
             }
         case .tireService:
@@ -245,7 +252,7 @@ enum PresentationMapper {
                     amount: $0.price,
                     mileage: $0.mileage,
                     date: $0.date,
-                    dateTitle: "Дата шиномонтажу"
+                    dateTitle: L10n.text("tireService.field.date")
                 )
             }
         case .otherExpenses:
@@ -256,7 +263,7 @@ enum PresentationMapper {
                     amount: $0.price,
                     mileage: $0.mileage,
                     date: $0.date,
-                    dateTitle: "Дата витрати"
+                    dateTitle: L10n.text("otherExpense.field.date")
                 )
             }
         }
@@ -291,14 +298,14 @@ enum PresentationMapper {
         guard let kilometers = car.kilometersUntilMaintenance else { return "—" }
 
         if kilometers > 0 {
-            return "\(kilometers.formatted()) км"
+            return "\(L10n.integer(kilometers)) \(L10n.text("unit.kilometers"))"
         }
 
         if kilometers == 0 {
-            return "Зараз"
+            return L10n.text("common.now")
         }
 
-        return "Прострочено на \(abs(kilometers).formatted()) км"
+        return L10n.text("maintenance.overdue", L10n.integer(abs(kilometers)))
     }
 
     private static func averageConsumption(for car: Car) -> Double? {

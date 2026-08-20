@@ -36,10 +36,10 @@ final class AddTuningModificationViewModel {
             let currentMileage = try repository.currentMileage(for: carID)
             try repository.addTuningModification(
                 to: carID,
-                name: try FormValidation.required(name, field: "Назва"),
-                price: try FormValidation.decimal(price, field: "Вартість", minimum: 0.01),
+                name: try FormValidation.required(name, field: "common.title"),
+                price: try FormValidation.decimal(price, field: "common.cost", minimum: 0.01),
                 date: date,
-                mileage: try FormValidation.integer(mileage, field: "Пробіг", minimum: currentMileage),
+                mileage: try FormValidation.integer(mileage, field: "car.field.mileage", minimum: currentMileage),
             )
             onSaved()
         } catch { errorMessage = error.localizedDescription }

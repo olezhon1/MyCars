@@ -6,10 +6,10 @@
 //
 
 enum AppTab: String, CaseIterable {
-    case home    = "Головна"
-    case myCars = "Мої авто"
-    case stats    = "Статистика"
-    case settings = "Налаштування"
+    case home    = "tab.home"
+    case myCars = "tab.myCars"
+    case stats    = "tab.statistics"
+    case settings = "settings.title"
     
     var icon: String {
         switch self {

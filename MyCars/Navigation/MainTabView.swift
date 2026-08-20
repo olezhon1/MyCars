@@ -8,11 +8,13 @@ struct MainTabView: View {
     @State private var homeViewModel: HomeViewModel
     @State private var carsViewModel: MyCarsViewModel
     @State private var statsViewModel: StatsViewModel
+    @State private var settings: AppSettings
 
     @MainActor
     init(router: AppRouter, container: AppContainer) {
         self.router = router
         self.container = container
+        _settings = State(initialValue: container.settings)
 #if DEBUG
         let createDebugCars: (() throws -> UUID?)? = {
             try container.debugCarSeeder.seed()
@@ -30,6 +32,7 @@ struct MainTabView: View {
             selection: container.carSelection,
             onAddCar: { router.push(CarsRoute.addCar) },
             onEditCar: { router.push(CarsRoute.editCar(carID: $0)) },
+            onDataChanged: { Task { try? await container.reminderService.synchronize() } },
             onCreateDebugCars: createDebugCars
         ))
         _statsViewModel = State(initialValue: StatsViewModel(
@@ -63,17 +66,18 @@ struct MainTabView: View {
             .tag(AppTab.stats)
 
             NavigationStack {
-                ContentUnavailableView("Налаштування", systemImage: "gear", description: Text("Розділ у розробці"))
+                SettingsView(settings: settings, reminderService: container.reminderService)
             }
             .tabItem { tabLabel(for: .settings) }
             .tag(AppTab.settings)
         }
         .tint(Color("primary"))
+        .environment(\.locale, settings.language.locale)
     }
 
     private func tabLabel(for tab: AppTab) -> some View {
         Label {
-            Text(tab.rawValue)
+            Text(L10n.text(tab.rawValue))
         } icon: {
             if let icon = UIImage(named: tab.icon)?.withRenderingMode(.alwaysTemplate) {
                 Image(uiImage: icon)
@@ -85,23 +89,23 @@ struct MainTabView: View {
     private func homeDestination(_ route: HomeRoute) -> some View {
         switch route {
         case .fuel(let carID):
-            AddRefuelView(viewModel: AddRefuelViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
+            AddRefuelView(viewModel: AddRefuelViewModel(carID: carID, repository: container.expenseRepository, onSaved: didSaveExpense))
         case .wash(let carID):
-            AddCarWashView(viewModel: AddCarWashViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
+            AddCarWashView(viewModel: AddCarWashViewModel(carID: carID, repository: container.expenseRepository, onSaved: didSaveExpense))
         case .insurance(let carID):
-            AddInsuranceView(viewModel: AddInsuranceViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
+            AddInsuranceView(viewModel: AddInsuranceViewModel(carID: carID, repository: container.expenseRepository, onSaved: didSaveExpense))
         case .maintenance(let carID):
-            AddMaintenanceView(viewModel: AddMaintenanceViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
+            AddMaintenanceView(viewModel: AddMaintenanceViewModel(carID: carID, repository: container.expenseRepository, onSaved: didSaveExpense))
         case .tuning(let carID):
-            AddTuningModificationView(viewModel: AddTuningModificationViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
+            AddTuningModificationView(viewModel: AddTuningModificationViewModel(carID: carID, repository: container.expenseRepository, onSaved: didSaveExpense))
         case .tireService(let carID):
-            AddTireServiceView(viewModel: AddTireServiceViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
+            AddTireServiceView(viewModel: AddTireServiceViewModel(carID: carID, repository: container.expenseRepository, onSaved: didSaveExpense))
         case .repair(let carID):
-            AddRepairView(viewModel: AddRepairViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
+            AddRepairView(viewModel: AddRepairViewModel(carID: carID, repository: container.expenseRepository, onSaved: didSaveExpense))
         case .otherExpenses(let carID):
-            AddOtherExpenseView(viewModel: AddOtherExpenseViewModel(carID: carID, repository: container.expenseRepository, onSaved: router.pop))
+            AddOtherExpenseView(viewModel: AddOtherExpenseViewModel(carID: carID, repository: container.expenseRepository, onSaved: didSaveExpense))
         case .unavailable(let service):
-            ContentUnavailableView(service.title, systemImage: "wrench.and.screwdriver", description: Text("Ця функція ще в розробці"))
+            ContentUnavailableView(service.title, systemImage: "wrench.and.screwdriver", description: Text("common.comingSoon"))
         }
     }
 
@@ -118,6 +122,12 @@ struct MainTabView: View {
     private func didSaveCar(_ carID: UUID) {
         container.carSelection.select(carID)
         router.pop()
+        Task { try? await container.reminderService.synchronize() }
+    }
+
+    private func didSaveExpense() {
+        router.pop()
+        Task { try? await container.reminderService.synchronize() }
     }
     
     @ViewBuilder
@@ -140,7 +150,7 @@ struct MainTabView: View {
         case .otherExpenses(let carID):
             statsDetail(carID: carID, service: .otherExpenses)
         case .unavailable(let service):
-            ContentUnavailableView(service.title, systemImage: "wrench.and.screwdriver", description: Text("Ця функція ще в розробці"))
+            ContentUnavailableView(service.title, systemImage: "wrench.and.screwdriver", description: Text("common.comingSoon"))
         }
     }
 

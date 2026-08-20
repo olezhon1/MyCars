@@ -15,8 +15,8 @@ struct ExpenseHistoryRow: View {
                     .frame(width: 24, height: 24)
 
                 HStack(alignment: .bottom, spacing: 12) {
-                    valueColumn(title: "Вартість", value: formattedAmount)
-                    valueColumn(title: "Пробіг", value: formattedMileage)
+                    valueColumn(title: "common.cost", value: formattedAmount)
+                    valueColumn(title: "car.field.mileage", value: formattedMileage)
                     valueColumn(title: item.dateTitle, value: formattedDate)
                 }
             }
@@ -45,7 +45,7 @@ struct ExpenseHistoryRow: View {
 
     private func valueColumn(title: String, value: String) -> some View {
         VStack(alignment: .center, spacing: 6) {
-            Text(title)
+            Text(L10n.text(title))
                 .font(.system(size: 10, weight: .semibold))
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
@@ -59,22 +59,12 @@ struct ExpenseHistoryRow: View {
     }
 
     private var formattedAmount: String {
-        let value = item.amount.formatted(
-            .number
-                .grouping(.automatic)
-                .precision(.fractionLength(0...2))
-                .locale(Locale(identifier: "uk_UA"))
-        )
-        return "\(value) грн"
+        L10n.currency(item.amount)
     }
 
     private var formattedMileage: String {
         guard let mileage = item.mileage else { return "—" }
-        return mileage.formatted(
-            .number
-                .grouping(.automatic)
-                .locale(Locale(identifier: "uk_UA"))
-        )
+        return "\(L10n.integer(mileage)) \(L10n.text("unit.kilometers"))"
     }
 
     private var formattedDate: String {
@@ -83,7 +73,7 @@ struct ExpenseHistoryRow: View {
                 .day(.twoDigits)
                 .month(.twoDigits)
                 .year(.twoDigits)
-                .locale(Locale(identifier: "uk_UA"))
+                .locale(L10n.locale)
         )
     }
 }

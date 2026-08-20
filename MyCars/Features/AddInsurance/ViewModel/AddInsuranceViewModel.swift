@@ -24,16 +24,18 @@ final class AddInsuranceViewModel {
 
     func save() {
         do {
-            guard type != .none else { throw ValidationError.message("Оберіть тип страхування.") }
-            guard endDate >= startDate else { throw ValidationError.message("Дата завершення не може бути раніше дати початку.") }
+            guard type != .none else { throw ValidationError.message(L10n.text("insurance.validation.typeRequired")) }
+            guard endDate >= startDate else {
+                throw ValidationError.message(L10n.text("insurance.validation.endDate"))
+            }
             try repository.addInsurance(
                 to: carID,
                 type: type,
-                policyNumber: try FormValidation.required(policyNumber, field: "Номер полісу"),
-                companyName: try FormValidation.required(companyName, field: "Страхова компанія"),
+                policyNumber: try FormValidation.required(policyNumber, field: "insurance.field.policyNumber"),
+                companyName: try FormValidation.required(companyName, field: "insurance.field.company"),
                 startDate: startDate,
                 endDate: endDate,
-                price: try FormValidation.decimal(price, field: "Вартість", minimum: 0.01)
+                price: try FormValidation.decimal(price, field: "common.cost", minimum: 0.01)
             )
             onSaved()
         } catch { errorMessage = error.localizedDescription }

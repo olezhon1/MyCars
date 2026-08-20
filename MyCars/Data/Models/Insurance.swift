@@ -41,4 +41,17 @@ enum InsuranceType: String, CaseIterable {
     case osago = "Автоцивілка"
     case kasko = "КАСКО"
     case greenCard = "Зелена картка"
+
+    var title: String {
+        switch self {
+        case .none:
+            L10n.text("insurance.type.none")
+        case .osago:
+            L10n.text("insurance.type.liability")
+        case .kasko:
+            L10n.text("insurance.type.comprehensive")
+        case .greenCard:
+            L10n.text("insurance.type.greenCard")
+        }
+    }
 }

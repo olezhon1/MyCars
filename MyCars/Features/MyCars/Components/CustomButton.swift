@@ -31,7 +31,7 @@ struct CustomButton: View {
                     image
                 }
 
-                Text(title)
+                Text(L10n.text(title))
                     .font(.system(size: 14, weight: .semibold))
             }
             .foregroundColor(Color("primary"))

@@ -12,10 +12,10 @@ struct AddCarView: View {
     @Bindable var viewModel: AddCarViewModel
     var body: some View {
         content()
-            .alert("Не вдалося зберегти", isPresented: errorPresented) {
-                Button("OK") { viewModel.dismissError() }
+            .alert("common.error.save", isPresented: errorPresented) {
+                Button("common.ok") { viewModel.dismissError() }
             } message: {
-                Text(viewModel.errorMessage ?? "Невідома помилка")
+                Text(viewModel.errorMessage ?? L10n.text("common.unknownError"))
             }
     }
 
@@ -36,44 +36,44 @@ struct AddCarView: View {
                 }
                 .frame(height: 160)
                 LabeledTextField(
-                    title: "Марка",
+                    title: "car.field.brand",
                     text: $viewModel.brand,
-                    validator: TextFieldValidator.required(field: "Марка")
+                    validator: TextFieldValidator.required(field: "car.field.brand")
                 )
                 LabeledTextField(
-                    title: "Модель",
+                    title: "car.field.model",
                     text: $viewModel.model,
-                    validator: TextFieldValidator.required(field: "Модель")
+                    validator: TextFieldValidator.required(field: "car.field.model")
                 )
                 LabeledTextField(
-                    title: "Рік",
+                    title: "common.year",
                     text: $viewModel.year,
                     keyboardType: .numberPad,
-                    validator: TextFieldValidator.integer(field: "Рік", minimum: 1886)
+                    validator: TextFieldValidator.integer(field: "common.year", minimum: 1886)
                 )
                 LabeledTextField(
-                    title: "Ціна купівлі",
+                    title: "car.field.purchasePrice",
                     text: $viewModel.purchasePrice,
                     keyboardType: .decimalPad,
                     unit: .hryvnias,
-                    validator: TextFieldValidator.decimal(field: "Ціна купівлі")
+                    validator: TextFieldValidator.decimal(field: "car.field.purchasePrice")
                 )
                 LabeledTextField(
-                    title: "Пробіг при купівлі",
+                    title: "car.purchaseMileage",
                     text: $viewModel.purchaseMileage,
                     keyboardType: .numberPad,
                     unit: .kilometers,
-                    validator: TextFieldValidator.integer(field: "Пробіг")
+                    validator: TextFieldValidator.integer(field: "car.field.mileage")
                 )
                 LabeledTextField(
-                    title: "Об'єм / ємність",
+                    title: "car.field.energyCapacity",
                     text: $viewModel.energyCapacity,
                     keyboardType: .decimalPad,
                     unit: .liters,
-                    validator: TextFieldValidator.decimal(field: "Об’єм / ємність")
+                    validator: TextFieldValidator.decimal(field: "car.field.energyCapacity")
                 )
                 
-                DatePicker("Дата купівлі", selection: $viewModel.purchaseDate, displayedComponents: .date)
+                DatePicker("car.field.purchaseDate", selection: $viewModel.purchaseDate, displayedComponents: .date)
                 
                 CustomButton(title: viewModel.saveButtonTitle) {
                     viewModel.save()

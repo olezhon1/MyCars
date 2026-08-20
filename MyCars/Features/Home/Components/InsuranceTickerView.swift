@@ -17,7 +17,10 @@ struct InsuranceTickerView: View {
     private var text: String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
-        return "СТРАХОВКА ДІЙСНА ДО \(formatter.string(from: validUntil))"
+        formatter.locale = AppLanguage(
+            rawValue: UserDefaults.standard.string(forKey: "settings.language") ?? ""
+        )?.locale ?? AppLanguage.english.locale
+        return L10n.text("insurance.validUntil", formatter.string(from: validUntil)).uppercased()
     }
 
     private var backgroundColor: Color {

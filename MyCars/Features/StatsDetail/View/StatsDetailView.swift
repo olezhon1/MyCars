@@ -16,10 +16,10 @@ struct StatsDetailView: View {
     var body: some View {
         content()
             .onAppear { viewModel.load() }
-            .alert("Не вдалося завантажити статистику", isPresented: errorPresented) {
-                Button("OK") { viewModel.dismissError() }
+            .alert("statistics.error.load", isPresented: errorPresented) {
+                Button("common.ok") { viewModel.dismissError() }
             } message: {
-                Text(viewModel.errorMessage ?? "Невідома помилка")
+                Text(viewModel.errorMessage ?? L10n.text("common.unknownError"))
             }
             .toolbar {
                 if viewModel.hasData {
@@ -65,7 +65,7 @@ struct StatsDetailView: View {
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Статистика".uppercased())
+        .navigationTitle(L10n.text("tab.statistics").uppercased())
     }
     
     @ViewBuilder
@@ -112,9 +112,9 @@ struct StatsDetailView: View {
 
         Chart(expenses) { expense in
             BarMark(
-                x: .value("Місяць", monthKey(for: expense.month)),
-                yStart: .value("Початок", 0),
-                yEnd: .value("Сума", expense.amount),
+                x: .value(L10n.text("statistics.period.month"), monthKey(for: expense.month)),
+                yStart: .value(L10n.text("chart.start"), 0),
+                yEnd: .value(L10n.text("common.amount"), expense.amount),
                 width: .ratio(widthRatio)
             )
             .cornerRadius(18)
@@ -175,9 +175,9 @@ struct StatsDetailView: View {
         VStack(spacing: 0) {
             Chart(expenses) { expense in
                 BarMark(
-                    x: .value("Місяць", monthKey(for: expense.month)),
-                    yStart: .value("Початок", 0),
-                    yEnd: .value("Сума", expense.amount),
+                    x: .value(L10n.text("statistics.period.month"), monthKey(for: expense.month)),
+                    yStart: .value(L10n.text("chart.start"), 0),
+                    yEnd: .value(L10n.text("common.amount"), expense.amount),
                     width: .ratio(0.6)
                 )
                 .cornerRadius(18)
@@ -281,7 +281,7 @@ struct StatsDetailView: View {
 
     private func sectionTitle(for month: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "uk_UA")
+        formatter.locale = L10n.locale
         formatter.setLocalizedDateFormatFromTemplate("LLLL yyyy")
 
         let components = formatter.string(from: month).split(separator: " ")
@@ -322,8 +322,8 @@ private enum StatsDisplayMode {
 
     var toggleAccessibilityLabel: String {
         switch self {
-        case .chart: return "Показати список"
-        case .list: return "Показати графік"
+        case .chart: return L10n.text("statistics.showList")
+        case .list: return L10n.text("statistics.showChart")
         }
     }
 

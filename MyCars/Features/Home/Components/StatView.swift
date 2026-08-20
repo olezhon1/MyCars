@@ -22,7 +22,7 @@ struct StatView: View {
         switch style {
         case .horizontal:
             HStack(spacing: 10) {
-                Text(title)
+                Text(L10n.text(title))
                     .font(.system(size: 10, weight: .semibold))
                 Text(value)
                     .font(.system(size: 10, weight: .black))
@@ -30,7 +30,7 @@ struct StatView: View {
             .foregroundColor(Color("primary"))
         case .vertical:
             VStack(alignment: alignment, spacing: 6) {
-                Text(title)
+                Text(L10n.text(title))
                     .font(.caption)
                 Text(value)
                     .font(.headline.bold())

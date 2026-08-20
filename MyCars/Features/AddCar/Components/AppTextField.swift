@@ -1,12 +1,12 @@
 import SwiftUI
 
 enum MeasurementUnit: String {
-    case kilometers = "км"
-    case liters = "л"
-    case hryvnias = "грн"
-    case hryvniasPerLiter = "грн/л"
-    case kilometersPerLiter = "км/л"
-    case litersPer100Kilometers = "л/100 км"
+    case kilometers = "unit.kilometers"
+    case liters = "unit.liters"
+    case hryvnias = "unit.currency"
+    case hryvniasPerLiter = "unit.currencyPerLiter"
+    case kilometersPerLiter = "unit.kilometersPerLiter"
+    case litersPer100Kilometers = "unit.litersPer100Kilometers"
 }
 
 enum AppTextFieldState: Equatable {
@@ -66,7 +66,7 @@ struct AppTextField: View {
                     Divider()
                         .frame(height: 18)
 
-                    Text(unit.rawValue)
+                    Text(L10n.text(unit.rawValue))
                         .font(.system(size: 13))
                         .foregroundStyle(.secondary)
                         .fixedSize()

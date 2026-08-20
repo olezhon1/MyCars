@@ -12,10 +12,10 @@ enum StatsPeriod: CaseIterable {
 
     var title: String {
         switch self {
-        case .month:    return "Місяць"
-        case .halfYear: return "Пів року"
-        case .year:     return "Рік"
-        case .allTime:  return "Весь час"
+        case .month:    return L10n.text("statistics.period.month")
+        case .halfYear: return L10n.text("statistics.period.halfYear")
+        case .year:     return L10n.text("common.year")
+        case .allTime:  return L10n.text("statistics.period.allTime")
         }
     }
 

@@ -11,10 +11,10 @@ struct AddInsuranceView: View {
     @Bindable var viewModel: AddInsuranceViewModel
     var body: some View {
         content()
-            .alert("Не вдалося зберегти", isPresented: errorPresented) {
-                Button("OK") { viewModel.dismissError() }
+            .alert("common.error.save", isPresented: errorPresented) {
+                Button("common.ok") { viewModel.dismissError() }
             } message: {
-                Text(viewModel.errorMessage ?? "Невідома помилка")
+                Text(viewModel.errorMessage ?? L10n.text("common.unknownError"))
             }
     }
 
@@ -29,35 +29,35 @@ struct AddInsuranceView: View {
             VStack(spacing: 16) {
                 
                 LabeledTextField(
-                    title: "Номер полісу",
+                    title: "insurance.field.policyNumber",
                     text: $viewModel.policyNumber,
-                    validator: TextFieldValidator.required(field: "Номер полісу")
+                    validator: TextFieldValidator.required(field: "insurance.field.policyNumber")
                 )
                 LabeledTextField(
-                    title: "Страхова компанія",
+                    title: "insurance.field.company",
                     text: $viewModel.companyName,
-                    validator: TextFieldValidator.required(field: "Страхова компанія")
+                    validator: TextFieldValidator.required(field: "insurance.field.company")
                 )
                 
                 LabeledTextField(
-                    title: "Вартість",
+                    title: "common.cost",
                     text: $viewModel.price,
                     keyboardType: .decimalPad,
                     unit: .hryvnias,
-                    validator: TextFieldValidator.decimal(field: "Вартість", minimum: 0.01)
+                    validator: TextFieldValidator.decimal(field: "common.cost", minimum: 0.01)
                 )
 
-                DatePicker("Дата початку", selection: $viewModel.startDate, displayedComponents: .date)
-                DatePicker("Дата закінчення", selection: $viewModel.endDate, displayedComponents: .date)
+                DatePicker("insurance.field.startDate", selection: $viewModel.startDate, displayedComponents: .date)
+                DatePicker("insurance.field.endDate", selection: $viewModel.endDate, displayedComponents: .date)
                 
-                Picker("Тип страховки", selection: $viewModel.type) {
+                Picker("insurance.field.type", selection: $viewModel.type) {
                     ForEach(InsuranceType.allCases, id: \.self) { type in
-                        Text(type.rawValue).tag(type)
+                        Text(type.title).tag(type)
                     }
                 }
                 .pickerStyle(.segmented)
                 
-                CustomButton(title: "Зберегти") {
+                CustomButton(title: "common.save") {
                     viewModel.save()
                 }
                 .padding(.horizontal, 40)
@@ -66,6 +66,6 @@ struct AddInsuranceView: View {
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Нова страховка".uppercased())
+        .navigationTitle(L10n.text("insurance.add.title").uppercased())
     }
 }

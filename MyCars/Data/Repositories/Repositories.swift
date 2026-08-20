@@ -28,7 +28,7 @@ enum RepositoryError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .carNotFound: "Автомобіль не знайдено. Можливо, його було видалено."
+        case .carNotFound: L10n.text("car.error.notFound")
         }
     }
 }

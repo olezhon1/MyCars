@@ -7,38 +7,38 @@ struct AddTireServiceView: View {
         ScrollView {
             VStack(spacing: 16) {
                 LabeledTextField(
-                    title: "Назва послуги",
+                    title: "tireService.field.title",
                     text: $viewModel.title,
-                    validator: TextFieldValidator.required(field: "Назва")
+                    validator: TextFieldValidator.required(field: "common.title")
                 )
                 LabeledTextField(
-                    title: "Вартість",
+                    title: "common.cost",
                     text: $viewModel.price,
                     keyboardType: .decimalPad,
                     unit: .hryvnias,
-                    validator: TextFieldValidator.decimal(field: "Вартість", minimum: 0.01)
+                    validator: TextFieldValidator.decimal(field: "common.cost", minimum: 0.01)
                 )
                 LabeledTextField(
-                    title: "Пробіг",
+                    title: "car.field.mileage",
                     text: $viewModel.mileage,
                     keyboardType: .numberPad,
                     unit: .kilometers,
-                    validator: TextFieldValidator.integer(field: "Пробіг")
+                    validator: TextFieldValidator.integer(field: "car.field.mileage")
                 )
-                DatePicker("Дата шиномонтажу", selection: $viewModel.date, displayedComponents: .date)
-                LabeledTextView(title: "Нотатки", placeholder: "Додаткова інформація...", text: $viewModel.notes)
-                CustomButton(title: "Зберегти") { viewModel.save() }
+                DatePicker("tireService.field.date", selection: $viewModel.date, displayedComponents: .date)
+                LabeledTextView(title: "common.notes", placeholder: "common.additionalInfo.placeholder", text: $viewModel.notes)
+                CustomButton(title: "common.save") { viewModel.save() }
                     .padding(.horizontal, 40)
             }
             .padding()
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Новий шиномонтаж".uppercased())
-        .alert("Не вдалося зберегти", isPresented: errorPresented) {
-            Button("OK") { viewModel.dismissError() }
+        .navigationTitle(L10n.text("tireService.add.title").uppercased())
+        .alert("common.error.save", isPresented: errorPresented) {
+            Button("common.ok") { viewModel.dismissError() }
         } message: {
-            Text(viewModel.errorMessage ?? "Невідома помилка")
+            Text(viewModel.errorMessage ?? L10n.text("common.unknownError"))
         }
     }
 

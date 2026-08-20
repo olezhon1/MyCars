@@ -15,29 +15,29 @@ struct MyCarsView: View {
     var body: some View {
         content(vm: viewModel)
             .onAppear { viewModel.load() }
-            .alert("Помилка", isPresented: Binding(get: { viewModel.errorMessage != nil }, set: { if !$0 { viewModel.dismissError() } })) {
-                Button("OK") { viewModel.dismissError() }
-            } message: { Text(viewModel.errorMessage ?? "Невідома помилка") }
+            .alert("common.error", isPresented: Binding(get: { viewModel.errorMessage != nil }, set: { if !$0 { viewModel.dismissError() } })) {
+                Button("common.ok") { viewModel.dismissError() }
+            } message: { Text(viewModel.errorMessage ?? L10n.text("common.unknownError")) }
 #if DEBUG
-            .alert("Тестові дані", isPresented: Binding(get: { viewModel.debugMessage != nil }, set: { if !$0 { viewModel.dismissDebugMessage() } })) {
-                Button("Готово") { viewModel.dismissDebugMessage() }
+            .alert("debug.data.title", isPresented: Binding(get: { viewModel.debugMessage != nil }, set: { if !$0 { viewModel.dismissDebugMessage() } })) {
+                Button("common.done") { viewModel.dismissDebugMessage() }
             } message: { Text(viewModel.debugMessage ?? "") }
 #endif
             .alert(
-                "Видалити автомобіль?",
+                "cars.delete.title",
                 isPresented: deletionAlertPresented,
                 presenting: deletionRequest
             ) { request in
-                Button("Видалити", role: .destructive) {
+                Button("common.delete", role: .destructive) {
                     var transaction = Transaction()
                     transaction.animation = nil
                     withTransaction(transaction) {
                         viewModel.deleteCar(request.id)
                     }
                 }
-                Button("Скасувати", role: .cancel) {}
+                Button("common.cancel", role: .cancel) {}
             } message: { request in
-                Text("Автомобіль «\(request.title)» та всю пов’язану історію буде видалено безповоротно.")
+                Text(L10n.text("cars.delete.message", request.title))
             }
     }
 
@@ -61,8 +61,8 @@ struct MyCarsView: View {
         ScrollView {
             LazyVStack(spacing: 12) {
                 HStack(alignment: .center, spacing: 20) {
-                    StatView(title: "Всього витрачено", value: vm.stats.totalExpenses, style: .horizontal)
-                    StatView(title: "На кілометр", value: vm.stats.costPerKilometer, style: .horizontal)
+                    StatView(title: "statistics.totalSpent", value: vm.stats.totalExpenses, style: .horizontal)
+                    StatView(title: "statistics.perKilometer", value: vm.stats.costPerKilometer, style: .horizontal)
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 4)
@@ -78,7 +78,7 @@ struct MyCarsView: View {
                     .padding(.horizontal, 20)
                 }
 
-                CustomButton(title: "Додати нове авто", image: Image("car")) {
+                CustomButton(title: "cars.add", image: Image("car")) {
                     vm.onAddCarTapped()
                 }
                 .padding(.horizontal, 40)
@@ -86,14 +86,14 @@ struct MyCarsView: View {
 
 #if DEBUG
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("DEBUG")
+                    Text("debug.badge")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
 
                     Button {
                         vm.createDebugCars()
                     } label: {
-                        Label("Створити тестові автомобілі", systemImage: "wrench.and.screwdriver.fill")
+                        Label("debug.cars.create", systemImage: "wrench.and.screwdriver.fill")
                             .frame(maxWidth: .infinity, alignment: .center)
                     }
                     .buttonStyle(.borderedProminent)
@@ -108,7 +108,7 @@ struct MyCarsView: View {
         }
         .background(Color("background"))
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Мої авто".uppercased())
+        .navigationTitle(L10n.text("tab.myCars").uppercased())
     }
 }
 

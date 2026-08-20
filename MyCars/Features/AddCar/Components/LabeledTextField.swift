@@ -33,14 +33,14 @@ struct LabeledTextField: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(title)
+            Text(L10n.text(title))
                 .font(.system(size: 13))
                 .foregroundStyle(titleColor)
                 .animation(.easeOut(duration: 0.2), value: fieldState)
 
             AppTextField(
-                placeholder: placeholder,
-                accessibilityLabel: title,
+                placeholder: L10n.text(placeholder),
+                accessibilityLabel: L10n.text(title),
                 text: $text,
                 keyboardType: keyboardType,
                 unit: unit,

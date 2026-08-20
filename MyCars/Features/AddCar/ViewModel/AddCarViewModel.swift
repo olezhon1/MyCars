@@ -19,8 +19,8 @@ final class AddCarViewModel {
     private(set) var errorMessage: String?
 
     var isEditing: Bool { carID != nil }
-    var navigationTitle: String { isEditing ? "Редагування авто" : "Нове авто" }
-    var saveButtonTitle: String { isEditing ? "Зберегти зміни" : "Зберегти" }
+    var navigationTitle: String { L10n.text(isEditing ? "car.edit.title" : "car.add.title") }
+    var saveButtonTitle: String { L10n.text(isEditing ? "common.saveChanges" : "common.save") }
 
     init(carID: UUID? = nil, repository: any CarRepository, onSaved: @escaping (UUID) -> Void) {
         self.carID = carID
@@ -31,12 +31,12 @@ final class AddCarViewModel {
 
     func save() {
         do {
-            let validatedBrand = try FormValidation.required(brand, field: "Марка")
-            let validatedModel = try FormValidation.required(model, field: "Модель")
-            let validatedYear = try FormValidation.integer(year, field: "Рік", minimum: 1886)
-            let validatedPurchasePrice = try FormValidation.decimal(purchasePrice, field: "Ціна купівлі")
-            let validatedPurchaseMileage = try FormValidation.integer(purchaseMileage, field: "Пробіг")
-            let validatedEnergyCapacity = try FormValidation.decimal(energyCapacity, field: "Об’єм / ємність")
+            let validatedBrand = try FormValidation.required(brand, field: "car.field.brand")
+            let validatedModel = try FormValidation.required(model, field: "car.field.model")
+            let validatedYear = try FormValidation.integer(year, field: "common.year", minimum: 1886)
+            let validatedPurchasePrice = try FormValidation.decimal(purchasePrice, field: "car.field.purchasePrice")
+            let validatedPurchaseMileage = try FormValidation.integer(purchaseMileage, field: "car.field.mileage")
+            let validatedEnergyCapacity = try FormValidation.decimal(energyCapacity, field: "car.field.energyCapacity")
             let data = CarData(
                 brand: validatedBrand,
                 model: validatedModel,
